@@ -23,7 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    
+    <Reference Include="OneStopRecruitment">
+      <HintPath>..\..\OneStopRecruitment--ITDiv-Copy\OneStopRecruitment--ITDiv-Copy\OneStopRecruitment\bin\Debug\netcoreapp3.1\OneStopRecruitment.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@ using Service.Modules.DashboardModule;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Service.Modules.LoginModule;
+using OneStopRecruitment.Areas.DashboardArea.ViewModels.Candidate;
 
 //---------------------------------------//
 //Nama author: arif
@@ -48,7 +49,7 @@ namespace Service.Modules
 
 
 
-        //DashboardCandidateViewModel viewModel = new DashboardCandidateViewModel();
+        DashboardCandidateViewModel viewModel = new DashboardCandidateViewModel();
 
         public override Task DoWork(CancellationToken cancellationToken)
         {
@@ -67,13 +68,13 @@ namespace Service.Modules
                     Dashboard dashboard = new Dashboard();
                     dashboard.CurrentPeriod = candidateService.GetCurrentPeriod(Login.Username);
                     dashboard.CurrentStage = candidateService.GetCurrentStage(Login.Username);
-                    //viewModel.Dashboard = dashboard;
+                    viewModel.Dashboard = dashboard;
 
-                    //viewModel.ScheduleList = candidateService.GetAvailableSchedules(Login.Username, Login.IDUser);
-                    //viewModel.CandidateScheduleList = candidateService.GetCandidateSchedules(Login.IDUser);
-                    //viewModel.AssignmentList = candidateService.GetAvailableAssignments(Login.Username);
-                    //viewModel.BlastEmailList = candidateService.GetNotifications();
-                    //viewModel.ToDoList = new List<ToDo>();
+                    viewModel.ScheduleList = candidateService.GetAvailableSchedules(Login.Username, Login.IDUser);
+                    viewModel.CandidateScheduleList = candidateService.GetCandidateSchedules(Login.IDUser);
+                    viewModel.AssignmentList = candidateService.GetAvailableAssignments(Login.Username);
+                    viewModel.BlastEmailList = candidateService.GetNotifications();
+                    viewModel.ToDoList = new List<ToDo>();
 
                     List<Assignment> unsubmittedAssignment = candidateService.GetUnsubmittedAssignments(Login.Username, Login.IDUser);
                     foreach (var item in unsubmittedAssignment)
@@ -108,7 +109,7 @@ namespace Service.Modules
                                 StartTime = item.StartTime,
                                 EndTime = item.EndTime
                             };
-                            //  viewModel.ToDoList.Add(newToDo);
+                              viewModel.ToDoList.Add(newToDo);
                         }
                         else if (item.Date == DateTime.Now)
                         {
@@ -124,68 +125,68 @@ namespace Service.Modules
                                     StartTime = item.StartTime,
                                     EndTime = item.EndTime
                                 };
-                                // viewModel.ToDoList.Add(newToDo);
+                                viewModel.ToDoList.Add(newToDo);
                             }
                         }
                     }
 
 
-                    //foreach (var item in viewModel.CandidateScheduleList)
-                    //{
-                    //    if (item.IDStage == 2 && item.Date.Date.CompareTo(DateTime.Now.Date) == 0 &&
-                    //        DateTime.Now.TimeOfDay.CompareTo(item.StartTime) >= 0 &&
-                    //        DateTime.Now.TimeOfDay.CompareTo(item.EndTime) <= 0)
-                    //    {
-                    //       // viewModel.LogicTestSchedule = item;
-                    //        break;
-                    //    }
-                    //}
+                    foreach (var item in viewModel.CandidateScheduleList)
+                    {
+                        if (item.IDStage == 2 && item.Date.Date.CompareTo(DateTime.Now.Date) == 0 &&
+                            DateTime.Now.TimeOfDay.CompareTo(item.StartTime) >= 0 &&
+                            DateTime.Now.TimeOfDay.CompareTo(item.EndTime) <= 0)
+                        {
+                            // viewModel.LogicTestSchedule = item;
+                            break;
+                        }
+                    }
 
 
 
                     DateTime hariini = DateTime.Now.Date;
 
-                    //if (viewModel.ToDoList.Count > 0)
-                    //{
+                    if (viewModel.ToDoList.Count > 0)
+                    {
 
 
-                    //    foreach (var item in viewModel.ToDoList)
-                    //    {
-                    //        if (item.ScheduleorAssignment == "Schedule") /// to scheduler scedhule list
-                    //        {
-                    //            DateTime tujuhago = item.Date.AddDays(-7);
-                    //            if (tujuhago > hariini && tujuhago == hariini)
-                    //            {
-                    //                if (hariini.TimeOfDay.Hours == 0 && hariini.TimeOfDay.Minutes == 1)
-                    //                {
-                    //                    //todo scheduler
+                        foreach (var item in viewModel.ToDoList)
+                        {
+                            if (item.ScheduleorAssignment == "Schedule") /// to scheduler scedhule list
+                            {
+                                DateTime tujuhago = item.Date.AddDays(-7);
+                                if (tujuhago > hariini && tujuhago == hariini)
+                                {
+                                    if (hariini.TimeOfDay.Hours == 0 && hariini.TimeOfDay.Minutes == 1)
+                                    {
+                                        //todo scheduler
 
 
-                    //                }
-                    //            }
+                                    }
+                                }
 
-                    //        }
-                    //        else if (item.ScheduleorAssignment == "Assignment") // to do schedule assigment list
-                    //        {
+                            }
+                            else if (item.ScheduleorAssignment == "Assignment") // to do schedule assigment list
+                            {
 
-                    //            if (item.DeadlineStartDate == hariini)
-                    //            { 
-                    //                    if(hariini.TimeOfDay.Hours == 0 && hariini.TimeOfDay.Minutes==1 )
-                    //                {
-                    //                    //todo scheduler
-
-
-                    //                }
+                                if (item.DeadlineStartDate == hariini)
+                                {
+                                    if (hariini.TimeOfDay.Hours == 0 && hariini.TimeOfDay.Minutes == 1)
+                                    {
+                                        //todo scheduler
 
 
-                    //            }
-
-                    //        }
+                                    }
 
 
-                    //    }
+                                }
 
-                    //}
+                            }
+
+
+                        }
+
+                    }
 
 
                 }
