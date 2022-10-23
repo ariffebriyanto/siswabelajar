@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchedulerWorker", "SchedulerWorker\SchedulerWorker.csproj", "{4AD76FE1-B851-445A-AF43-CDA1423BD114}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceWorkerCronJobDemo", "C:\Users\LENOVO\Downloads\ServiceWorkerCronJob-master\ServiceWorkerCronJob-master\ServiceWorkerCronJobDemo\ServiceWorkerCronJobDemo.csproj", "{FEC2DE5F-FA6E-4BD9-BA00-FC182E12B914}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{4AD76FE1-B851-445A-AF43-CDA1423BD114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AD76FE1-B851-445A-AF43-CDA1423BD114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AD76FE1-B851-445A-AF43-CDA1423BD114}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FEC2DE5F-FA6E-4BD9-BA00-FC182E12B914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FEC2DE5F-FA6E-4BD9-BA00-FC182E12B914}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FEC2DE5F-FA6E-4BD9-BA00-FC182E12B914}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FEC2DE5F-FA6E-4BD9-BA00-FC182E12B914}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -57,7 +57,7 @@ namespace OneStopRecruitment.Areas.DashboardArea.Controllers
             List<MasterSchedule> unregisteredSchedule = candidateService.GetUnenrolledSchedules(login.Username, login.IDUser);
             foreach (var item in unregisteredSchedule)
             {
-                if (item.Date > DateTime.Now && item.StartTime > DateTime.Now.TimeOfDay)
+                if (item.Date > DateTime.Now)
                 {
                     ToDo newToDo = new ToDo()
                     {
@@ -70,6 +70,23 @@ namespace OneStopRecruitment.Areas.DashboardArea.Controllers
                         EndTime = item.EndTime
                     };
                     viewModel.ToDoList.Add(newToDo);
+                }
+                else if (item.Date == DateTime.Now)
+                {
+                    if (item.StartTime > DateTime.Now.TimeOfDay)
+                    {
+                        ToDo newToDo = new ToDo()
+                        {
+                            ScheduleorAssignment = "Schedule",
+                            PeriodName = item.PeriodName,
+                            StageName = item.StageName,
+                            SubStageName = item.SubStageName,
+                            Date = item.Date,
+                            StartTime = item.StartTime,
+                            EndTime = item.EndTime
+                        };
+                        viewModel.ToDoList.Add(newToDo);
+                    }
                 }
             }
 
