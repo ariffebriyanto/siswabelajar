@@ -136,14 +136,14 @@ namespace OneStopRecruitment
             ////start arif
             services.AddControllers();
 
-            //services.AddScoped<IMyScopedService, MyScopedService>();
+            services.AddScoped<IMyScopedService, MyScopedService>();
 
-            //services.AddCronJob<MyCronJob1>(c =>
-            //{
-            //    c.TimeZoneInfo = TimeZoneInfo.Local;
-            //    c.CronExpression = @"* * * * *";
+            services.AddCronJob<MyCronJob1>(c =>
+            {
+                c.TimeZoneInfo = TimeZoneInfo.Local;
+                c.CronExpression = @"* * * * *";
 
-            //});
+            });
 
 
             ///// end arif
