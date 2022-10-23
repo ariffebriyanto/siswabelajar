@@ -1,0 +1,64 @@
+﻿@model OneStopRecruitment.Areas.MasterScheduleArea.ViewModels.Staff.MasterScheduleViewModel
+
+<div class="C--table-card type--1 mt-2">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3 class="card__title">Master Schedule</h3>
+            </div>            
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <form id="form-view-period">
+                <table class="datatables ui celled table">
+                    <thead class="table-head">
+                        <tr>
+                            <th style="width: 15%">Title</th>
+                            <th style="width: 15%;">Date</th>
+                            <th style="width: 15%;">Time</th>
+                            <th style="width: 15%;">Room</th>
+                            <th style="width: 15%;">Limit</th>
+                            <th style="width: 15%;">Qty</th>
+                            <th style="width: 10%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.ScheduleList.Count(); i++)
+                        {
+                            var item = Model.ScheduleList.ElementAt(i);
+
+                            <tr>
+                                <td style="width: 15%;">
+                                    @if (item.SubStageName.Equals(""))
+                                    {
+                                        @item.StageName
+                                    }
+                                    else
+                                    {
+                                        @item.SubStageName
+                                    }
+                                </td>
+                                <td style="width: 15%;"><span style="display: none;">@item.Date.ToString("yyyyMMdd")</span>@item.Date.ToString("ddd, dd MMM yyyy")</td>
+                                <td style="width: 15%;">@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                                <td style="width: 15%;">@item.Room</td>
+                                <td style="width: 15%;">@item.Limit</td>
+                                <td style="width: 15%;">@item.Qty</td>
+                                <td style="width: 10%;">
+                                    <a-encoded asp-route-scheduleID="@item.IDSchedule" asp-action="UpdateSchedule" asp-area="MasterScheduleArea" asp-controller="Staff" method="GET"
+                                               class="C--button button-type--2 -theme-primary -size--small material-icons editSchedule">
+                                        edit
+                                    </a-encoded>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+</script>

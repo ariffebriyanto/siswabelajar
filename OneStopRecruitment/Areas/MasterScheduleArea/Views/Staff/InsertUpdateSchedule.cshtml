@@ -1,0 +1,205 @@
+﻿@model OneStopRecruitment.Areas.MasterScheduleArea.ViewModels.Staff.MasterScheduleViewModel
+@using Model.DBConstraint;
+@{
+    string Action;
+    if (Model.Schedule.IDSchedule.Equals(Guid.Empty))
+    {
+        Action = "InsertSchedule";
+        ViewData["Title"] = "Insert Schedule";
+    }
+    else
+    {
+        Action = "UpdateSchedule";
+        ViewData["Title"] = "Update Schedule";
+    }
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">
+    <form id="form" class="M--form type--1" asp-action="@Action" asp-area="MasterScheduleArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        <input asp-for="Schedule.IDSchedule" hidden />
+        <div class="form__field">
+            <label class="field__label">Period<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select id="ddlPeriod" asp-for="Schedule.IDPeriod" asp-items="@Model.PeriodList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.Period</option>
+                </select>
+            </div>
+            <span asp-validation-for="Schedule.IDPeriod" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Stage<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select id="ddlStage" asp-for="Schedule.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                </select>
+            </div>
+            <span asp-validation-for="Schedule.IDStage" class="text-error"></span>
+        </div>
+        <div id="section-substage" class="form__field">
+            <label class="field__label">Substage<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <input id="IDSubStage" asp-for="Schedule.IDSubStage" hidden />
+                <select id="ddlSubStage" class="combobox__component">
+                </select>
+            </div>
+            <span asp-validation-for="Schedule.IDSubStage" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Position<span class="mandatory">*</span></label>
+            <input id="IDPosition" asp-for="Schedule.IDPosition" hidden />
+            @{
+                var positionSplit = Helper.StringHelper.StringManipulation.SplitToList(Model.Schedule.IDPosition ?? "", ";");
+            }
+            @foreach (var item in Model.PositionList)
+            {
+                if (positionSplit.Where(x => x.Equals(item.IDPosition)).FirstOrDefault() != null)
+                {
+                    <input type="checkbox" class="cbxPosition C--checkbox" value="@item.IDPosition" checked /> @item.PositionName
+                }
+                else
+                {
+                    <input type="checkbox" class="cbxPosition C--checkbox" value="@item.IDPosition" /> @item.PositionName
+                }
+                <br />
+            }
+            <span asp-validation-for="Schedule.IDPosition" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Date<span class="mandatory">*</span></label>
+            <input asp-for="Schedule.Date" id="date" type="text" class="C--textbox type--1 datepicker" value="@Model.Schedule.Date.ToString("dd MMM yyyy")" placeholder="Date">
+            <span asp-validation-for="Schedule.Date" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <div class="row">
+                <div class="col-md-6 pr-sm-3">
+                    <label class="field__label">Start Time<span class="mandatory">*</span></label>
+                    <input asp-for="Schedule.StartTime" id="startTime" type="text" class="C--textbox type--1 timepicker" value="@Model.Schedule.StartTime" placeholder="Start Time">
+                    <span asp-validation-for="Schedule.StartTime" class="text-error"></span>
+                </div>
+                <div class="col-md-6 pr-sm-3">
+                    <label class="field__label">End Time<span class="mandatory">*</span></label>
+                    <input asp-for="Schedule.EndTime" id="endTime" type="text" class="C--textbox type--1 timepicker" value="@Model.Schedule.EndTime" placeholder="End Time">
+                    <span asp-validation-for="Schedule.EndTime" class="text-error"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Room<span class="mandatory">*</span></label>
+            <input asp-for="Schedule.Room" type="text" class="C--textbox type--1" autocomplete="off" />
+            <span asp-validation-for="Schedule.Room" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Limit<span class="mandatory">*</span></label>
+            <input asp-for="Schedule.Limit" type="number" class="C--textbox type--1" autocomplete="off" />
+            <span asp-validation-for="Schedule.Limit" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <span asp-validation-for="Schedule.IDSchedule" class="text-error"></span>
+        </div>
+        <div class="form__action">
+            <button id="btnSave" class="button C--button type--1 -theme-primary">Submit</button>
+        </div>
+    </form>
+</section>
+
+<script>
+    $(document).ready(function () {
+        init();
+
+        let timepickerSetup = {
+            timeFormat: 'HH:mm'
+        }        
+
+        $('#date').datepicker({ format: 'dd M yyyy' });
+        $('#startTime').timepicker(timepickerSetup);
+        $('#endTime').timepicker(timepickerSetup);
+
+        $('.cbxPosition').on('click', function () {
+            updateCheckedPosition();
+        })
+
+        $('#btnSave').click(function (e) {
+            e.preventDefault();
+            $('#IDSubStage').val($('#ddlSubStage').val() == null ? 0 : $('#ddlSubStage').val());
+            $('#form').submit();
+        })
+
+        $('#ddlStage').on('change', function () {
+            let IDStage = $(this).val();
+            $('#section-substage').hide();
+
+            loadSubStage(IDStage);
+        });
+
+        function updateCheckedPosition() {
+            let value = ''
+            $('.cbxPosition').each(function (idx) {
+                if ($(this).is(':checked')) {
+                    value += `${$(this).val()};`
+                }
+            })
+            $('#IDPosition').val(value);
+        }
+
+        function init() {
+            $('#section-substage').hide();
+            $('#IDSubStage').val(@Model.Schedule.IDSubStage);
+            updateCheckedPosition();
+            loadSubStage(@Model.Schedule.IDStage, @Model.Schedule.IDSubStage);
+        }
+
+        function loadSubStage(IDStage, IDSubStage = 0) {
+            if (IDStage != 0) {
+                showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading');
+                $.ajax({
+                    method: 'post',
+                    url: '@Url.Action("GetSubStageList", "Staff")',
+                    data: { IDStage },
+                    success: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        if (result != null && result.length > 0) {
+                            let temp = '';
+                            $('#ddlSubStage').html('');
+
+                            if (IDSubStage == 0) {
+                                temp += `<option value="0" selected disabled hidden>@DropdownConstraint.SubStage</option>`
+                                $('#ddlSubStage').siblings('.combobox__label').html('@DropdownConstraint.SubStage')
+                            }
+
+
+                            result.forEach((e) => {
+                                if (IDSubStage != 0 && e.idSubStage == IDSubStage) {
+                                    temp += `
+                                        <option selected value="${e.idSubStage}">${e.subStageName}</option>
+                                    `
+                                    $('#ddlSubStage').siblings('.combobox__label').html(e.subStageName)
+                                }
+                                else {
+                                    temp += `
+                                        <option value="${e.idSubStage}">${e.subStageName}</option>
+                                    `
+                                }
+                            });
+
+                            $('#ddlSubStage').val(0);
+                            $('#ddlSubStage').html(temp);
+                            $('#section-substage').show();
+                        }
+                        else {
+                            $('#ddlSubStage').val(0);
+                        }
+                    },
+                    error: function (error) {
+                        $('#loadingMessage').modal('hide');
+                        $('#ddlSubStage').val(0);
+                    }
+                })
+            }
+        }
+    });
+</script>

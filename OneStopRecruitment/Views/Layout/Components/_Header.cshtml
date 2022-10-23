@@ -1,0 +1,45 @@
+﻿@model OneStopRecruitment.ViewModels.HeaderViewModel
+
+<header class="M--navigation type--1">
+    <nav class="navigation">
+        <div class="container--fluid">
+            <div class="U--table -full-height">
+                <div class="table__cell cell--mobile -auto-width -vertical-align--middle">
+                    <button class="navigation__button button--menu button--toggle-sidebar">
+                        <i class="material-icons">menu</i>
+                    </button>
+                </div>
+                <div class="table__cell -vertical-align--middle">
+                </div>
+                <div class="table__cell -auto-width -vertical-align--middle">
+                    <div class="greetings-text">@Model.Greetings,<br /><strong>@Model.User.Name.ToUpper()</strong></div>
+                </div>
+                <div class="table__cell -auto-width -vertical-align--middle">
+                    <div class="navigation__dropdown-wrapper">
+                        <button class="navigation__button button--toggle-profile button--toggle-dropdown">
+                            <figure class="navigation__avatar C--avatar type--1 -w-32">
+                                <img src="~/images/default/profile.png" alt="">
+                            </figure>
+                        </button>
+                        <nav class="navigation__dropdown">
+                            <div class="dropdown__wrap">
+                                <header class="dropdown__profile">
+                                    <figure class="profile__avatar C--avatar type--1">
+                                        <img src="~/images/default/profile.png" alt="">
+                                    </figure>
+                                    <h3 class="profile__name">
+                                        <strong>@Model.User.Name.ToUpper()</strong>
+                                    </h3>
+                                    <span class="profile__meta">@Model.User.RoleName</span>
+                                </header>
+                                <div class="dropdown__action">
+                                    <a asp-area="LoginArea" asp-controller="Auth" asp-action="Logout" class="action__button C--button type--1 -theme-red -full-width">Sign Out</a>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

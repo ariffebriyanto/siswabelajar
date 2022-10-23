@@ -1,0 +1,266 @@
+﻿@model OneStopRecruitment.Areas.MasterLogicTestArea.ViewModels.Staff.MasterLogicTestViewModel
+@using Model.DBConstraint
+@{
+    int INSERT = 1;
+    int UPDATE = 2;
+
+    string action = "";
+    int type;
+
+    string questionImagePath = "";
+    string answerImagePath = "";
+
+    if (Model.MasterLogicTestQuestion.IDLogicTestQuestion == Guid.Empty)
+    {
+        ViewData["Title"] = "Insert Question";
+        action = "InsertQuestion";
+        type = INSERT;
+    }
+    else
+    {
+        ViewData["Title"] = "Update Question";
+        action = "UpdateQuestion";
+        type = UPDATE;
+
+        questionImagePath = Convert.ToString(TempData["QuestionImagePath"]) ?? "";
+        answerImagePath = Convert.ToString(TempData["AnswerImagePath"]) ?? "";
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var ErrorMessage = Convert.ToString(TempData["ErrorMessage"]) ?? "";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <form class="M--form type--1" asp-action="@action" asp-area="MasterLogicTestArea" asp-controller="Staff" method="post" enctype="multipart/form-data"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        <input asp-for="MasterLogicTestQuestion.IDLogicTestQuestion" value="@Model.MasterLogicTestQuestion.IDLogicTestQuestion" hidden />
+        <div class="form__field">
+            <label class="field__label">Question Type<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select asp-for="MasterLogicTestQuestion.IDLogicTestQuestionType" asp-items="@Model.LogicTestQuestionTypeList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.QuestionType</option>
+                </select>
+            </div>
+            <span asp-validation-for="MasterLogicTestQuestion.IDLogicTestQuestionType" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <div style="margin-top:20px">
+                <label class="field__label">Question<span class="mandatory">*</span></label>
+                <div style="margin:10px 0px 10px 0px;">
+                    <input id="questionText" asp-for="MasterLogicTestQuestion.Type" type="radio" class="rbQuestion" value="text" checked />
+                    <label for="questionText">Text</label>
+
+                    <input id="questionImage" asp-for="MasterLogicTestQuestion.Type" type="radio" class="rbQuestion" value="image" style="margin-left:15px;" />
+                    <label for="questionImage">Image</label>
+                </div>
+
+                <textarea asp-for="MasterLogicTestQuestion.QuestionText" id="txtQuestion" class="C--textarea type--1" rows="3" cols="40">@Model.MasterLogicTestQuestion.QuestionText</textarea>
+                <span asp-validation-for="MasterLogicTestQuestion.QuestionText" class="text-error"></span>
+
+                <input type="file" asp-for="MasterLogicTestQuestion.QuestionFile" class="form-control-file uploadQuestion" />
+                <span asp-validation-for="MasterLogicTestQuestion.QuestionFile" class="text-error"></span>
+
+                @if (type == UPDATE)
+                {
+                    <input asp-for="MasterLogicTestQuestion.QuestionImage" hidden />
+
+                    if (!String.IsNullOrEmpty(Model.MasterLogicTestQuestion.QuestionImage))
+                    {
+                        var questionImage = $"{questionImagePath}{Model.MasterLogicTestQuestion.QuestionImage}";
+                        <img width="120" src="@questionImage" class="uploadQuestion" style="margin-top:20px" />
+                    }
+                }
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-2">
+                    <input asp-for="MasterLogicTestQuestion.CorrectChoice" type="radio" class="rbAnswer" value="A" />
+                    <span><b>Option A</b></span>
+                </div>
+                <div class="col-md-10">
+                    <input id="answerAText" asp-for="MasterLogicTestQuestion.FirstChoiceType" type="radio" class="rbAnswerA" value="text" checked />
+                    <label for="answerAText">Text</label>
+                    <input id="answerAImage" asp-for="MasterLogicTestQuestion.FirstChoiceType" type="radio" class="rbAnswerA" value="image" style="margin-left:15px;" />
+                    <label for="answerAImage">Image</label>
+
+                    <br />
+
+                    <textarea asp-for="MasterLogicTestQuestion.FirstChoiceText" id="txtAnswerA" class="C--textarea type--1" rows="3" cols="40"></textarea>
+                    <span asp-validation-for="MasterLogicTestQuestion.FirstChoiceText" class="text-error"></span>
+                    <input type="file" asp-for="MasterLogicTestQuestion.FirstChoiceFile" class="form-control-file uploadAnswerA" />
+                    <span asp-validation-for="MasterLogicTestQuestion.FirstChoiceFile" class="text-error"></span>
+
+                    @if (type == UPDATE)
+                    {
+                        <input asp-for="MasterLogicTestQuestion.FirstChoiceImage" hidden />
+
+                        if (!String.IsNullOrEmpty(Model.MasterLogicTestQuestion.FirstChoiceImage))
+                        {
+                            var firstImage = $"{answerImagePath}{Model.MasterLogicTestQuestion.FirstChoiceImage}";
+                            <img width="120" src="@firstImage" class="uploadAnswerA" style="margin-top:20px" />
+                        }
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col-md-2">
+                    <input asp-for="MasterLogicTestQuestion.CorrectChoice" type="radio" class="rbAnswer" value="B" />
+                    <span><b>Option B</b></span>
+                </div>
+                <div class="col-md-10">
+                    <input id="answerBText" asp-for="MasterLogicTestQuestion.SecondChoiceType" type="radio" class="rbAnswerB" value="text" checked />
+                    <label for="answerBText">Text</label>
+                    <input id="answerBImage" asp-for="MasterLogicTestQuestion.SecondChoiceType" type="radio" class="rbAnswerB" value="image" style="margin-left:15px;" />
+                    <label for="answerBImage">Image</label>
+
+                    <br />
+
+                    <textarea asp-for="MasterLogicTestQuestion.SecondChoiceText" id="txtAnswerB" class="C--textarea type--1" rows="3" cols="40"></textarea>
+                    <span asp-validation-for="MasterLogicTestQuestion.SecondChoiceText" class="text-error"></span>
+                    <input type="file" asp-for="MasterLogicTestQuestion.SecondChoiceFile" class="form-control-file uploadAnswerB" />
+                    <span asp-validation-for="MasterLogicTestQuestion.SecondChoiceFile" class="text-error"></span>
+
+                    @if (type == UPDATE)
+                    {
+                        <input asp-for="MasterLogicTestQuestion.SecondChoiceImage" hidden />
+
+                        if (!String.IsNullOrEmpty(Model.MasterLogicTestQuestion.SecondChoiceImage))
+                        {
+                            var secondImage = $"{answerImagePath}{Model.MasterLogicTestQuestion.SecondChoiceImage}";
+                            <img width="120" src="@secondImage" class="uploadAnswerB" style="margin-top:20px" />
+                        }
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col-md-2">
+                    <input asp-for="MasterLogicTestQuestion.CorrectChoice" type="radio" class="rbAnswer" value="C" />
+                    <span><b>Option C</b></span>
+                </div>
+                <div class="col-md-10">
+                    <input id="answerCText" asp-for="MasterLogicTestQuestion.ThirdChoiceType" type="radio" class="rbAnswerC" value="text" checked />
+                    <label for="answerCText">Text</label>
+                    <input id="answerCImage" asp-for="MasterLogicTestQuestion.ThirdChoiceType" type="radio" class="rbAnswerC" value="image" style="margin-left:15px;" />
+                    <label for="answerCImage">Image</label>
+
+                    <br />
+
+                    <textarea asp-for="MasterLogicTestQuestion.ThirdChoiceText" id="txtAnswerC" class="C--textarea type--1" rows="3" cols="40"></textarea>
+                    <span asp-validation-for="MasterLogicTestQuestion.ThirdChoiceText" class="text-error"></span>
+                    <input type="file" asp-for="MasterLogicTestQuestion.ThirdChoiceFile" class="form-control-file uploadAnswerC" />
+                    <span asp-validation-for="MasterLogicTestQuestion.ThirdChoiceFile" class="text-error"></span>
+
+                    @if (type == UPDATE)
+                    {
+                        <input asp-for="MasterLogicTestQuestion.ThirdChoiceImage" hidden />
+
+                        if (!String.IsNullOrEmpty(Model.MasterLogicTestQuestion.ThirdChoiceImage))
+                        {
+                            var thirdImage = $"{answerImagePath}{Model.MasterLogicTestQuestion.ThirdChoiceImage}";
+                            <img width="120" src="@thirdImage" class="uploadAnswerC" style="margin-top:20px" />
+                        }
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row" style="margin-top:20px; margin-bottom:20px;">
+                <div class="col-md-2">
+                    <input asp-for="MasterLogicTestQuestion.CorrectChoice" type="radio" class="rbAnswer" value="D" />
+                    <span><b>Option D</b></span>
+                </div>
+                <div class="col-md-10">
+                    <input id="answerDText" asp-for="MasterLogicTestQuestion.FourthChoiceType" type="radio" class="rbAnswerD" value="text" checked />
+                    <label for="answerDText">Text</label>
+                    <input id="answerDImage" asp-for="MasterLogicTestQuestion.FourthChoiceType" type="radio" class="rbAnswerD" value="image" style="margin-left:15px;" />
+                    <label for="answerDImage">Image</label>
+
+                    <br />
+
+                    <textarea asp-for="MasterLogicTestQuestion.FourthChoiceText" id="txtAnswerD" class="C--textarea type--1" rows="3" cols="40"></textarea>
+                    <span asp-validation-for="MasterLogicTestQuestion.FourthChoiceText" class="text-error"></span>
+                    <input type="file" asp-for="MasterLogicTestQuestion.FourthChoiceFile" class="form-control-file uploadAnswerD" />
+                    <span asp-validation-for="MasterLogicTestQuestion.FourthChoiceFile" class="text-error"></span>
+
+                    @if (type == UPDATE)
+                    {
+                        <input asp-for="MasterLogicTestQuestion.FourthChoiceImage" hidden />
+
+                        if (!String.IsNullOrEmpty(Model.MasterLogicTestQuestion.FourthChoiceImage))
+                        {
+                            var fourthImage = $"{answerImagePath}{Model.MasterLogicTestQuestion.FourthChoiceImage}";
+                            <img width="120" src="@fourthImage" class="uploadAnswerD" style="margin-top:20px" />
+                        }
+                    }
+                </div>
+            </div>
+            <span asp-validation-for="MasterLogicTestQuestion.CorrectChoice" class="text-error"></span>
+        </div>
+        <div class="form__action">
+            <button class="button C--button type--1 -theme-primary">Submit</button>
+        </div>
+    </form>
+</section>
+
+<script>
+    function showHideAnswer(type, option) {
+        if (type == "text") {
+            $(`#txtAnswer${option}`).show();
+            $(`.uploadAnswer${option}`).hide();
+        }
+        else {
+            $(`#txtAnswer${option}`).hide();
+            $(`.uploadAnswer${option}`).show();
+        }
+    }
+
+    function showHideQuestion(type) {
+        if (type == "text") {
+            $('#txtQuestion').show();
+            $('.uploadQuestion').hide();
+        }
+        else {
+            $('#txtQuestion').hide();
+            $('.uploadQuestion').show();
+        }
+    }
+
+    function init() {
+        $.each($('.rbQuestion'), function (i, val) {
+            if ($(this).is(':checked')) showHideQuestion($(this).val());
+        })
+
+        $.each($('.rbAnswerA'), function (i, val) {
+            if ($(this).is(':checked')) showHideAnswer($(this).val(), "A");
+        })
+
+        $.each($('.rbAnswerB'), function (i, val) {
+            if ($(this).is(':checked')) showHideAnswer($(this).val(), "B");
+        })
+
+        $.each($('.rbAnswerC'), function (i, val) {
+            if ($(this).is(':checked')) showHideAnswer($(this).val(), "C");
+        })
+
+        $.each($('.rbAnswerD'), function (i, val) {
+            if ($(this).is(':checked')) showHideAnswer($(this).val(), "D");
+        })
+    }
+
+    init();
+
+    $('.rbQuestion').on('click', function () { showHideQuestion($(this).val()); })
+    $('.rbAnswerA').on('click', function () { showHideAnswer($(this).val(), "A"); })
+    $('.rbAnswerB').on('click', function () { showHideAnswer($(this).val(), "B"); })
+    $('.rbAnswerC').on('click', function () { showHideAnswer($(this).val(), "C"); })
+    $('.rbAnswerD').on('click', function () { showHideAnswer($(this).val(), "D"); })
+</script>

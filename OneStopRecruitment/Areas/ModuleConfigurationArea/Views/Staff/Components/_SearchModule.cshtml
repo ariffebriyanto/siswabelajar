@@ -1,0 +1,104 @@
+﻿@model OneStopRecruitment.Areas.ModuleConfigurationArea.ViewModels.Staff.ModuleConfigurationResultViewModel
+@using Model.DBConstraint
+
+<div class="C--table-card type--1">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-8">
+                <h3 class="card__title">@Model.RoleName Modules</h3>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload">
+            <table id="tableModuleConfiguration" class="datatables ui celled table">
+                <thead class="table-head">
+                    <tr>
+                        <th class="set-table-width break-word sticky" style="--param-width: 350px;">Module Name</th>
+                        <th class="set-table-width break-word sticky" style="--param-width: 400px;">Route</th>
+                        <th class="set-table-width break-word sticky" style="--param-width: 85px;">Level</th>
+                        <th class="set-table-width break-word sticky" style="--param-width: 75px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.ModuleList.Count(); i++)
+                    {
+                        var item = Model.ModuleList.ElementAt(i);
+                        <tr>
+                            <td class="set-table-width break-word" style="--param-width: 350px;">@item.ModuleName</td>
+                            <td class="set-table-width break-word" style="--param-width: 400px;">@item.Route</td>
+                            <td class="set-table-width break-word" style="--param-width: 85px;">@item.ModuleLevel.ToString()</td>
+                            <td class="set-table-width break-word td-center" style="--param-width: 75px;">
+                                <input class="hidden_moduleId" type="hidden" value="@item.IDModule" />
+                                <a-encoded asp-area="ModuleConfigurationArea" asp-controller="Staff" asp-action="UpdateModule"
+                                           asp-route-moduleID="@item.IDModule"
+                                           class="C--button button-type--1 -theme-primary -size--small material-icons"
+                                           onclick="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+                                    create
+                                </a-encoded>
+                                <a class="C--button button-type--1 -theme-primary -size--small material-icons btnDeleteModule">delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#tableModuleConfiguration').DataTable({
+
+        });
+    });
+
+    $(".btnDeleteModule").click(function () {
+        let IDModule = $(this).siblings(".hidden_moduleId").val();
+
+        Swal.fire({
+            title: 'Are you sure want to delete this module?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteModule", "Staff")',
+                    data: {
+                        moduleID: IDModule
+                    },
+                    beforeSend: function () {
+                        showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading');
+                    },
+                    success: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        $('#loadingMessage').on('hidden.bs.modal', function () {
+                            showAlert(result.status, result.message);
+
+                            $('#successMessage').on('hidden.bs.modal', function () {
+                                location.reload();
+                            });
+                        });
+                    },
+                    error: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        $('#loadingMessage').on('hidden.bs.modal', function () {
+                            showAlert(result.status, result.message);
+
+                            $('#failedMessage').on('hidden.bs.modal', function () {
+                                location.reload();
+                            });
+                        });
+                    }
+                });
+            }
+        })
+    });
+</script>

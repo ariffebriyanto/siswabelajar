@@ -1,0 +1,176 @@
+﻿@model OneStopRecruitment.Areas.AssignmentArea.ViewModels.Staff.AssignmentFormViewModel
+@using Model.DBConstraint
+@{
+    string Action = "";
+    if (Model.AssignmentForm.IDAssignment == 0)
+    {
+        Action = "InsertAssignment";
+        ViewData["Title"] = "Insert Assignment";
+    }
+    else
+    {
+        Action = "UpdateAssignment";
+        ViewData["Title"] = "Update Assignment";
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div>
+        <form class="M--form type--1" asp-area="AssignmentArea" asp-controller="Staff" asp-action="@Action"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off" enctype="multipart/form-data">
+            <input type="hidden" asp-for="AssignmentForm.IDAssignment" />
+            <div id="sectionDDLPeriod" class="form__field">
+                <label class="field__label">Period<span class="mandatory">*</span></label>
+                <input id="hidden_periodId" type="hidden" asp-for="@Model.AssignmentForm.IDPeriod" />
+                <input disabled id="txtPeriod" type="text" class="C--textbox type--1" asp-for="AssignmentForm.PeriodName" placeholder="Period Name">
+                <span asp-validation-for="AssignmentForm.IDPeriod" class="text-error"></span>
+            </div>
+            <div id="sectionDDLStage" class="form__field">
+                <label class="field__label">Stage<span class="mandatory">*</span></label>
+                @if (Model.AssignmentForm.IDAssignment == 0)
+                {
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlStage" asp-for="AssignmentForm.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="AssignmentForm.IDStage" class="text-error"></span>
+                }
+                else
+                {
+                    <input disabled readonly type="text" class="C--textbox type--1" asp-for="AssignmentForm.StageName">
+                    <input id="hidden_stageId" type="hidden" asp-for="@Model.AssignmentForm.IDStage" />
+                }
+            </div>
+            <input id="hidden_subStageId" type="hidden" asp-for="@Model.AssignmentForm.IDSubStage" />
+            @if (Model.AssignmentForm.IDAssignment == 0)
+            {
+                <div id="sectionDDLSubStage" class="form__field display-none">
+                    <label class="field__label">Substage<span class="mandatory">*</span></label>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlSubStage" asp-for="AssignmentForm.IDSubStage" class="combobox__component">
+                        </select>
+                    </div>
+                    <span asp-validation-for="AssignmentForm.IDSubStage" class="text-error"></span>
+                </div>
+            }
+            else
+            {
+                @if (Model.AssignmentForm.IDSubStage != 0 && Model.AssignmentForm.IDSubStage != -1)
+                {
+                    <div id="sectionDDLSubStage" class="form__field">
+                        <label class="field__label">Substage<span class="mandatory">*</span></label>
+                        <input disabled readonly type="text" class="C--textbox type--1" asp-for="AssignmentForm.SubStageName">
+                    </div>
+                }
+            }
+            <div class="form__field">
+                <div class="row">
+                    <div class="col-md-6 pr-sm-3">
+                        <label class="field__label">Start Date<span class="mandatory">*</span></label>
+                        <input readonly asp-for="AssignmentForm.DeadlineStartDate" id="startDate" type="text" class="C--textbox type--1 datepicker" placeholder="Start Date">
+                        <span asp-validation-for="AssignmentForm.DeadlineStartDate" class="text-error"></span>
+                    </div>
+                    <div class="col-md-6 pl-sm-3">
+                        <label class="field__label">End Date<span class="mandatory">*</span></label>
+                        <input readonly asp-for="AssignmentForm.DeadlineEndDate" id="endDate" type="text" class="C--textbox type--1 datepicker" placeholder="End Date">
+                        <span asp-validation-for="AssignmentForm.DeadlineEndDate" class="text-error"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form__field">
+                <label class="field__label">Notes<span class="mandatory">*</span></label>
+                <textarea id="txtNotes" class="C--textarea type--1" rows="10" asp-for="AssignmentForm.Notes" placeholder="Notes"></textarea>
+                <span asp-validation-for="AssignmentForm.Notes" class="text-error"></span>
+            </div>
+            <div class="form__field">
+                <label class="field__label">File<span class="mandatory">*</span></label>
+                <input type="file" asp-for="AssignmentForm.AssignmentFile" class="form-control-file" />
+                <span asp-validation-for="AssignmentForm.AssignmentFile" class="text-error"></span>
+            </div>
+            <div class="form__action">
+                @if (Model.AssignmentForm.AssignmentFileName != null && Model.AssignmentForm.AssignmentFileName != "")
+                {
+                    <a asp-area="AssignmentArea" asp-controller="Staff" asp-action="DownloadAssignmentQuestionFile"
+                       asp-route-fileName="@Model.AssignmentForm.AssignmentFileName"
+                       class="C--button type--1 -theme-primary mr-2">
+                        Download Existing File
+                    </a>
+                }
+                <button type="submit" class="C--button type--1 -theme-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        $('#startDate').datepicker({
+            format: 'dd M yyyy'
+        }).datepicker();
+
+        $('#endDate').datepicker({
+            format: 'dd M yyyy'
+        }).datepicker();
+
+        if (@Html.Raw(Json.Serialize(Model.AssignmentForm.DeadlineStartDate)) != null) {
+            $('#startDate').datepicker('setDate', new Date(@Html.Raw(Json.Serialize(Model.AssignmentForm.DeadlineStartDate.GetValueOrDefault()))));
+        }
+
+        if (@Html.Raw(Json.Serialize(Model.AssignmentForm.DeadlineEndDate)) != null) {
+            $('#endDate').datepicker('setDate', new Date(@Html.Raw(Json.Serialize(Model.AssignmentForm.DeadlineEndDate.GetValueOrDefault()))));
+        }
+
+        $('#ddlStage').on('change', function () {
+            let IDPeriod = $('#hidden_periodId').val();
+            let IDStage = $(this).val();
+
+            if (IDStage != 0 && IDStage != null && IDPeriod != 0 && IDPeriod != null) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetSubStageInScheduleDropdown", "Staff")',
+                    data: {
+                        periodID: IDPeriod,
+                        stageID: IDStage
+                    },
+                    success: function (result) {
+                        if (result != null && result.length > 0) {
+                            $('#ddlSubStage').empty();
+                            $('#hidden_subStageId').val(null);
+                            $('#ddlSubStage').append(`<option value="" selected disabled hidden>@DropdownConstraint.SubStage</option>`);
+                            $('#ddlSubStage').siblings('.combobox__label').html('@DropdownConstraint.SubStage');
+                            result.forEach((row) => {
+                                if (row['value'] == @Model.AssignmentForm.IDSubStage) {
+                                    $('#ddlSubStage').val(row['value']);
+                                    $('#ddlSubStage').append(`<option selected="selected" value="${row['value']}">${row['text']}</option>`);
+                                    $('#ddlSubStage').siblings('.combobox__label').html(row['text']);
+                                } else {
+                                    $('#ddlSubStage').append(`<option value="${row['value']}">${row['text']}</option>`);
+                                }
+                            });
+                            $("#hidden_subStageId").prop("disabled", true);
+                            $('#hidden_subStageId').hide();
+                            $('#sectionDDLSubStage').show();
+                        }
+                        else {
+                            $("#hidden_subStageId").prop("disabled", false);
+                            $('#hidden_subStageId').show();
+                            $('#hidden_subStageId').val(-1);
+                            $('#sectionDDLSubStage').hide();
+                        }
+                    },
+                    error: function (result) {
+                        $("#hidden_subStageId").prop("disabled", false);
+                        $('#hidden_subStageId').show();
+                        $('#hidden_subStageId').val(0);
+                        $('#sectionDDLSubStage').hide();
+                    }
+                });
+            }
+        });
+
+        $('#ddlStage').trigger('change');
+    });
+</script>

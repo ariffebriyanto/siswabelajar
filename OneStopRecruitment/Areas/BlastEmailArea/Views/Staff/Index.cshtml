@@ -1,0 +1,32 @@
+﻿@model OneStopRecruitment.Areas.BlastEmailArea.ViewModels.Staff.BlastEmailViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Blast Email";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div>
+        <form class="M--form type--1" asp-area="BlastEmailArea" asp-controller="Staff" asp-action="Index"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off">
+            <div class="form__field">
+                <label class="field__label">Subject<span class="mandatory">*</span></label>
+                <input id="txtSubject" type="text" class="C--textbox type--1" asp-for="EmailForm.Subject" placeholder="Subject">
+                <span asp-validation-for="EmailForm.Subject" class="text-error"></span>
+            </div>
+            <div class="form__field">
+                <label class="field__label">Body<span class="mandatory">*</span></label>
+                <textarea id="txtBody" class="C--textarea type--1" rows="10" asp-for="EmailForm.Body" placeholder="Body"></textarea>
+                <span asp-validation-for="EmailForm.Body" class="text-error"></span>
+            </div>
+            <div class="form__action">
+                <button type="submit" class="C--button type--1 -theme-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+    $('.ui.dropdown').dropdown();
+</script>

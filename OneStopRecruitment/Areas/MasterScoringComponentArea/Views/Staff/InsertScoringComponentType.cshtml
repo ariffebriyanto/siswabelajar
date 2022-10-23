@@ -1,0 +1,23 @@
+﻿@model OneStopRecruitment.Areas.MasterScoringComponentArea.ViewModels.Staff.MasterScoringComponentViewModel
+@using Model.DBConstraint;
+@{
+    ViewData["Title"] = "Insert Scoring Component Type";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">
+    <form class="M--form type--1" asp-action="InsertScoringComponentType" asp-area="MasterScoringComponentArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        @Html.AntiForgeryToken()
+        <div class="form__field">
+            <label class="field__label">Scoring Component Type<span class="mandatory">*</span></label>
+            <input asp-for="ScoringComponentType.ScoringComponentTypeText" type="text" class="C--textbox type--1" value="@Model.ScoringComponentType.ScoringComponentTypeText" autocomplete="off">
+            <span asp-validation-for="ScoringComponentType.ScoringComponentTypeText" class="text-error"></span>
+        </div>
+        <div class="form__action">
+            <button type="submit" class="C--button type--1 -theme-primary">Submit</button>
+        </div>
+    </form>
+</section>

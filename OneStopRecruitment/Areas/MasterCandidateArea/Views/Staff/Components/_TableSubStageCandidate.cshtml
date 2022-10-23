@@ -1,0 +1,194 @@
+﻿@model OneStopRecruitment.Areas.MasterCandidateArea.ViewModels.CandidateViewModel
+@using Model.DBConstraint;
+
+<div class="C--table-card type--1 mt-2">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3 class="card__title">Candidates</h3>
+            </div>
+        </div>
+    </div>
+    <form id="form-with-substage" asp-action="SubmitCandidate" asp-area="MasterCandidateArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        <input asp-for="IDPeriod" hidden />
+        <input class="hidden_stageId" asp-for="IDStage" hidden />
+        <input asp-for="IDPosition" hidden />
+        <input asp-for="IsSaveAsDraft" hidden />
+        <div class="card__body">
+            <div class="C--datatables type--1 -autoload overflow">
+                <table class="datatables ui celled table">
+                    <thead class="table-head">
+                        <tr>
+                            <th style="width: 5%"></th>
+                            <th style="width: 15%;">Name</th>
+                            <th style="width: 15%;">NIM</th>
+                            @for (var i = 0; i < Model.SubStageList.Count; i++)
+                            {                                
+                                <th>
+                                    <input asp-for="@Model.SubStageList[i].IDStage" hidden />
+                                    <input asp-for="@Model.SubStageList[i].IDSubStage" hidden />
+                                    <input asp-for="@Model.SubStageList[i].SubStageName" hidden />
+                                    @Model.SubStageList[i].SubStageName
+                                </th>
+                            }
+                            <th style="width: 30%;">Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.CandidateList.Count(); i++)
+                        {
+                            var item = Model.CandidateList.ElementAt(i);
+
+                            <tr class="@(Model.CandidateList[i].IsMeetCriteria ? "candidate-pass-bg" : null )">
+                                <td style="width: 10%">
+                                    <input asp-for="@Model.CandidateList[i].IDCandidate" hidden />
+                                    <input asp-for="@Model.CandidateList[i].Email" hidden />
+                                    <input asp-for="@Model.CandidateList[i].Name" hidden />
+                                    <input asp-for="@Model.CandidateList[i].Name" hidden />
+                                    <input asp-for="@Model.CandidateList[i].NIM" hidden />
+                                    <input asp-for="@Model.CandidateList[i].IDPeriod" hidden />
+                                    <input asp-for="@Model.CandidateList[i].IDStage" hidden />
+                                    <input asp-for="@Model.CandidateList[i].IDPosition" hidden />
+                                    <input asp-for="@Model.CandidateList[i].IsAlreadySubmit" hidden />
+                                    @if (item.IsPass)
+                                    {
+                                        <input asp-for="@Model.CandidateList[i].IsPass" type="checkbox" checked 
+                                               disabled="@(!Model.CanSubmitCandidate || item.IDStage > Model.IDStage ? "disabled" : null )" />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="@Model.CandidateList[i].IsPass" type="checkbox" 
+                                               disabled="@(!Model.CanSubmitCandidate || item.IDStage > Model.IDStage ? "disabled" : null )" />
+                                    }
+                                </td>
+                                <td style="width: 15%;">@item.Name.ToUpper()</td>
+                                <td style="width: 15%;">@item.NIM</td>
+                                @for (int j=0; j < item.SubStageScoreList.Count; j++)
+                                {
+                                    <td>
+                                        <input asp-for="@Model.CandidateList[i].SubStageScoreList[j].IDStage" hidden />
+                                        <input asp-for="@Model.CandidateList[i].SubStageScoreList[j].IDSubStage" hidden />
+                                        <input asp-for="@Model.CandidateList[i].SubStageScoreList[j].MinimumScore" hidden />
+                                        <input asp-for="@Model.CandidateList[i].SubStageScoreList[j].SubStageName" hidden />                                
+                                        <input asp-for="@Model.CandidateList[i].SubStageScoreList[j].Score" hidden />
+                                        @item.SubStageScoreList[j].Score
+                                    </td>
+                                }
+                                <td style="width: 30%;">
+                                    <textarea asp-for="@Model.CandidateList[i].Note" rows="2" type="number" 
+                                              class="C--textarea type--1" autocomplete="off" placeholder="Input note"
+                                              disabled="@(!Model.CanSubmitCandidate || item.IDStage > Model.IDStage ? "disabled" : null )">
+                                    </textarea>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if (Model.CanSubmitCandidate)
+        {
+            <div class="row">
+                <div class="col-md-12" style="margin:15px; ">
+                    <button id="btnSubmit" class="button C--button type--1 -theme-primary">
+                        Submit
+                    </button>
+
+                    <button id="btnSaveAsDraft" class="button C--button type--1 -theme-primary">
+                        Save As Draft
+                    </button>
+
+                    <a class="button C--button type--1 -theme-primary btnUpdateToNextStage">
+                        Update to Next Stage
+                    </a>
+                </div>
+            </div>
+        }
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#btnSubmit').click(function (e) {
+            e.preventDefault();
+            $('#IsSaveAsDraft').val(0);
+            Swal.fire({
+                title: 'Are you sure want to submit candidates?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#form-with-substage').submit();
+                }
+            })
+        })
+
+        $('#btnSaveAsDraft').click(function (e) {
+            e.preventDefault();
+            $('#IsSaveAsDraft').val(1);
+            $('#form-with-substage').submit();
+        })
+
+        //$('input[type="checkbox"]').on('click', function () {
+        //    let tr = $(this).closest('tr')
+        //    if (tr.hasClass('candidate-pass-bg')) {
+        //        tr.removeClass('candidate-pass-bg')
+        //    }
+        //    else {
+        //        tr.addClass('candidate-pass-bg')
+        //    }
+        //})
+
+        $(".btnUpdateToNextStage").click(function () {
+            let IDStage = $(".hidden_stageId").val();
+
+            Swal.fire({
+                title: 'Are you sure want to update to next stage?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("UpdateToNextStage", "Staff")',
+                        data: {
+                            stageID: IDStage
+                        },
+                        beforeSend: function () {
+                            showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading');
+                        },
+                        success: function (result) {
+                            $('#loadingMessage').modal('hide');
+
+                            $('#loadingMessage').on('hidden.bs.modal', function () {
+                                showAlert(result.status, result.message);
+
+                                $('#successMessage').on('hidden.bs.modal', function () {
+                                    location.reload();
+                                });
+                            });
+                        },
+                        error: function (result) {
+                            $('#loadingMessage').modal('hide');
+
+                            $('#loadingMessage').on('hidden.bs.modal', function () {
+                                showAlert(result.status, result.message);
+
+                                $('#failedMessage').on('hidden.bs.modal', function () {
+                                    location.reload();
+                                });
+                            });
+                        }
+                    });
+                }
+            })
+        });
+    });
+</script>

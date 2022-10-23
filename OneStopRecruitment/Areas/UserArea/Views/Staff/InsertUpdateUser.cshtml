@@ -1,0 +1,79 @@
+﻿@model OneStopRecruitment.Areas.UserArea.ViewModels.UserViewModel
+@using Model.DBConstraint
+@{
+    string Action;
+    bool isInsert;
+    if (Model.User.IDUser.Equals(Guid.Empty))
+    {
+        ViewData["Title"] = "Insert User";
+        Action = "InsertUser";
+        isInsert = true;
+    }
+    else
+    {
+        ViewData["Title"] = "Update User";
+        Action = "UpdateUser";
+        isInsert = false;
+    }
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var ErrorMessage = Convert.ToString(TempData["ErrorMessage"]) ?? "";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">
+    <form class="M--form type--1" asp-action="@Action" asp-area="UserArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+        <input asp-for="User.IDUser" hidden />
+        <div class="form__field">
+            <label class="field__label">Role<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select id="ddlPeriod" asp-for="User.IDRole" asp-items="@Model.RoleList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.Role</option>
+                </select>
+            </div>
+            <span asp-validation-for="User.IDRole" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Username<span class="mandatory">*</span></label>
+            @if (isInsert)
+            {
+                <input asp-for="User.Username" type="text" class="C--textbox type--1" autocomplete="off" placeholder="Username">
+                <span asp-validation-for="User.Username" class="text-error"></span>
+            }
+            else
+            {
+                <input asp-for="User.Username" type="text" class="C--textbox type--1" autocomplete="off" readonly>
+            }
+        </div>
+        <div class="form__field">
+            <label class="field__label">Name<span class="mandatory">*</span></label>
+            <input asp-for="User.Name" type="text" class="C--textbox type--1" autocomplete="off" placeholder="Name">
+            <span asp-validation-for="User.Name" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Email<span class="mandatory">*</span></label>
+            <input asp-for="User.Email" type="email" class="C--textbox type--1" autocomplete="off" placeholder="Email">
+            <span asp-validation-for="User.Email" class="text-error"></span>
+        </div>
+
+        @if (Model.User.IDUser.Equals(Guid.Empty))
+        {
+            <div class="form__field">
+                <label class="field__label">Password<span class="mandatory">*</span></label>
+                <input asp-for="User.Password" type="password" class="C--textbox type--1" autocomplete="off" placeholder="Password">
+                <span asp-validation-for="User.Password" class="text-error"></span>
+            </div>
+
+            <div class="form__field">
+                <label class="field__label">Confirm Password<span class="mandatory">*</span></label>
+                <input asp-for="User.ConfirmPassword" type="password" class="C--textbox type--1" autocomplete="off" placeholder="Confirm Password">
+                <span asp-validation-for="User.ConfirmPassword" class="text-error"></span>
+            </div>
+        }
+
+        <div class="form__action">
+            <button type="submit" class="C--button type--1 -theme-primary">Submit</button>
+        </div>
+    </form>
+</section>

@@ -1,0 +1,59 @@
+﻿@model OneStopRecruitment.Areas.MasterScheduleArea.ViewModels.Staff.MasterScheduleViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Master Schedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div class="C--combobox-card type--1">
+        <form class="M--form type--1" asp-action="Index" asp-area="MasterScheduleArea" asp-controller="Staff"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off">
+            <div class="card__body">
+                <div id="sectionDDLPeriod" class="form__field">
+                    <h3 class="card__title label">Period</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlPeriod" asp-for="@Model.IDPeriod" asp-items="@Model.PeriodList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Period</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="sectionDDLStage" class="form__field">
+                    <h3 class="card__title label">Stage</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlPeriod" asp-for="@Model.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="sectionDDLPosition" class="form__field">
+                    <h3 class="card__title label">Position</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlPeriod" asp-for="@Model.IDPosition" asp-items="@Model.PositionDropdown" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Position</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="text-right">                    
+                    <a asp-action="InsertSchedule" asp-area="MasterScheduleArea" asp-controller="Staff" method="GET"
+                       class="button C--button type--1 -theme-primary card__multiple__button">
+                        <i class="material-icons">add</i>
+                        Insert Schedule
+                    </a>
+                    <button class="button C--button type--1 -theme-primary">
+                        <i class="material-icons">search</i>
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<section class="section-divider">
+    @if (Model.IDPeriod != 0 && Model.IDStage != 0 && !String.IsNullOrEmpty(Model.IDPosition))
+    {
+        @await Component.InvokeAsync("TableSchedule", new { IDPeriod = Model.IDPeriod, IDStage = Model.IDStage, IDPosition = Model.IDPosition   })
+    }
+</section>

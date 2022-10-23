@@ -1,0 +1,63 @@
+﻿@model OneStopRecruitment.Areas.SubstageArea.ViewModels.SubstageViewModel
+@using Model.DBConstraint
+@{
+    string action;
+    if (Model.SubStage.IDSubStage == 0)
+    {
+        ViewData["Title"] = "Insert Substage";
+        action = "InsertSubstage";
+    }
+    else
+    {
+        ViewData["Title"] = "Update Substage";
+        action = "UpdateSubstage";
+    }
+
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">
+    <form asp-action="@action" asp-area="SubstageArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Dropdown Stage -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="field__label">Stage<span class="mandatory">*</span></label>
+                        <input asp-for="@Model.SubStage.IDSubStage" hidden/>
+                        <div class="C--combobox type--1 -autoload card__text">
+                            <select asp-for="SubStage.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                                <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="SubStage.IDStage" class="text-error"></span>
+                    </div>
+                </div>
+
+                <!-- Deadline -->
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12">
+                        <label class="field__label">Substage<span class="mandatory">*</span></label>
+                        <input asp-for="SubStage.SubStageName" id="end-date" type="text" class="C--textbox type--1" placeholder="Substage Name">
+                        <span asp-validation-for="SubStage.SubStageName" class="text-error"></span>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-md-12">
+                        <button class="button C--button type--1 -theme-primary">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+<script>
+
+</script>

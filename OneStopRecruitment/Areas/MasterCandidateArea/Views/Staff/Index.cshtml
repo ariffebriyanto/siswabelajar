@@ -1,0 +1,57 @@
+﻿@model OneStopRecruitment.Areas.MasterCandidateArea.ViewModels.CandidateViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Master Candidate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div class="C--combobox-card type--1">
+        <form class="M--form type--1" asp-action="Index" asp-area="MasterCandidateArea" asp-controller="Staff"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off">
+            <div class="card__body">
+                <div class="form__field">
+                    <h3 class="card__title label">Period</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlPeriod" asp-for="@Model.IDPeriod" asp-items="@Model.PeriodList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Period</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="IDPeriod" class="text-error"></span>
+                </div>
+                <div class="form__field">
+                    <h3 class="card__title label">Stage</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlPeriod" asp-for="@Model.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="IDStage" class="text-error"></span>
+                </div>
+                <div class="form__field">
+                    <h3 class="card__title label">Position</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlPeriod" asp-for="@Model.IDPosition" asp-items="@Model.PositionList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Position</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="IDPosition" class="text-error"></span>
+                </div>
+                <div class="text-right">
+                    <button class="button C--button type--1 -theme-primary">
+                        <i class="material-icons">search</i>
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<section class="section-divider">
+    @if (Model.IDPeriod != 0 && Model.IDStage != 0 && !String.IsNullOrEmpty(Model.IDPosition))
+    {
+        @await Component.InvokeAsync("TableCandidate", new { viewModel = Model })
+    }
+</section>

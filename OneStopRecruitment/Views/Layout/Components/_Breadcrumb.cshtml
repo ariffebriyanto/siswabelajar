@@ -1,0 +1,46 @@
+﻿@model OneStopRecruitment.ViewModels.BreadcrumbViewModel
+
+<section class="breadcrumb-area">
+    <div class="C--breadcrumb type--1">
+        <div class="breadcrumb__container">
+            <a asp-area="DashboardArea" asp-controller="@Model.UserRole.RoleName" asp-action="Index" class="breadcrumb__item">
+                <span class="item__label">Home</span>
+            </a>
+            @for (var i = 0; i < Model.Breadcrumb.Count(); i++)
+            {
+                var item = Model.Breadcrumb.ElementAt(i);
+                if (i < Model.Breadcrumb.Count() - 1)
+                {
+                    if (i == 0)
+                    {
+                        <a href="@Model.Breadcrumb.ElementAt(1).URL" class="breadcrumb__item">
+                            <span class="item__label">@item.Name.ToUpper()</span>
+                        </a>
+                    }
+                    else if (i != 1)
+                    {
+                        <a href="@item.URL" class="breadcrumb__item">
+                            <span class="item__label">@item.Name.ToUpper()</span>
+                        </a>
+                    }
+                }
+                else if (!item.Name.Equals("Index"))
+                {
+                    <span class="breadcrumb__item">
+                        <span class="item__label">@item.Name.ToUpper()</span>
+                    </span>
+                }
+            }
+        </div>
+    </div>
+    <header class="C--block-header type--1">
+        @if (Model.Breadcrumb.ElementAt(Model.Breadcrumb.Count() - 1).Name.Equals("Index"))
+        {
+            <h2 class="section__title">@Model.Breadcrumb.ElementAt(0).Name</h2>
+        }
+        else
+        {
+            <h2 class="section__title">@Model.Breadcrumb.ElementAt(Model.Breadcrumb.Count() - 1).Name</h2>
+        }
+    </header>
+</section>

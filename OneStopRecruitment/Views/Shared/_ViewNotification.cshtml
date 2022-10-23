@@ -1,0 +1,15 @@
+﻿@model IEnumerable<PopUpNotification>
+@foreach (var item in Model)
+{
+    <text>
+        <script>
+            $(document).ready(function () {
+                showAlert("@item.Type", "@item.Message");
+            })
+        </script>
+    </text>
+}
+
+@{
+    TempData["viewNotifications"] = null;
+}

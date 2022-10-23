@@ -1,0 +1,138 @@
+﻿@model OneStopRecruitment.Areas.MinimumScoreArea.ViewModels.MinimumScoreViewModel
+@using Model.DBConstraint;
+@{    
+    string Action;
+    if (Model.MinimumScore.IDMinimumScore == 0)
+    {
+        Action = "InsertMinimumScore";
+        ViewData["Title"] = "Insert Minimum Score";
+    }
+    else
+    {
+        Action = "UpdateMinimumScore";
+        ViewData["Title"] = "Update Minimum Score";
+    }
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">
+    <form id="form" class="M--form type--1" asp-action="@Action" asp-area="MinimumScoreArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        <input asp-for="MinimumScore.IDMinimumScore" hidden />
+        <div class="form__field">
+            <label class="field__label">Period<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select id="ddlPeriod" asp-for="MinimumScore.IDPeriod" asp-items="@Model.PeriodList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.Period</option>
+                </select>
+            </div>
+            <span asp-validation-for="MinimumScore.IDPeriod" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Stage<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select id="ddlStage" asp-for="MinimumScore.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                </select>
+            </div>
+            <span asp-validation-for="MinimumScore.IDStage" class="text-error"></span>
+        </div>
+        <div id="section-substage" class="form__field">
+            <label class="field__label">Substage<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <input id="IDSubStage" asp-for="MinimumScore.IDSubStage" hidden />
+                <select id="ddlSubStage" class="combobox__component">
+                </select>
+            </div>
+            <span asp-validation-for="MinimumScore.IDSubStage" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Minimum Score<span class="mandatory">*</span></label>
+            <input asp-for="MinimumScore.Score" type="number" class="C--textbox type--1" autocomplete="off">
+            <span asp-validation-for="MinimumScore.Score" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <span asp-validation-for="MinimumScore.IDMinimumScore" class="text-error"></span>
+        </div>
+        <div class="form__action">
+            <button id="btnSave" type="submit" class="C--button type--1 -theme-primary">Submit</button>
+        </div>
+    </form>
+</section>
+
+<script>
+    $(document).ready(function () {
+        init();
+
+        $('#btnSave').click(function (e) {
+            e.preventDefault();
+            $('#IDSubStage').val($('#ddlSubStage').val() == null ? 0 : $('#ddlSubStage').val());            
+            $('#form').submit();
+        })
+
+        $('#ddlStage').on('change', function () {
+            let IDStage = $(this).val();
+            $('#section-substage').hide();
+
+            loadSubStage(IDStage);
+        });
+
+        function init() {
+            $('#section-substage').hide();
+            $('#IDSubStage').val(@Model.MinimumScore.IDSubStage)
+            loadSubStage(@Model.MinimumScore.IDStage, @Model.MinimumScore.IDSubStage);
+        }
+
+        function loadSubStage(IDStage, IDSubStage = 0) {
+            if (IDStage != 0) {
+                showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading');
+                $.ajax({
+                    method: 'post',
+                    url: '@Url.Action("GetSubStageList", "Staff")',
+                    data: { IDStage },
+                    success: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        if (result != null && result.length > 0) {
+                            let temp = '';
+                            $('#ddlSubStage').html('');
+
+                            if (IDSubStage == 0) {
+                                temp += `<option value="0" selected disabled hidden>@DropdownConstraint.SubStage</option>`
+                                $('#ddlSubStage').siblings('.combobox__label').html('@DropdownConstraint.SubStage')
+                            }
+
+
+                            result.forEach((e) => {
+                                if (IDSubStage != 0 && e.idSubStage == IDSubStage) {
+                                    temp += `
+                                        <option selected value="${e.idSubStage}">${e.subStageName}</option>
+                                    `
+                                    $('#ddlSubStage').siblings('.combobox__label').html(e.subStageName)
+                                }
+                                else {
+                                    temp += `
+                                        <option value="${e.idSubStage}">${e.subStageName}</option>
+                                    `
+                                }
+                            });
+
+                            $('#ddlSubStage').val(0);
+                            $('#ddlSubStage').html(temp);
+                            $('#section-substage').show();
+                        }
+                        else {
+                            $('#ddlSubStage').val(0);
+                        }
+                    },
+                    error: function (error) {
+                        $('#loadingMessage').modal('hide');
+                        $('#ddlSubStage').val(0);
+                    }
+                })
+            }
+        }
+    });
+</script>

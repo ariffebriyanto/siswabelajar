@@ -1,0 +1,204 @@
+﻿@model OneStopRecruitment.Areas.DashboardArea.ViewModels.Trainer.DashboardTrainerViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div>
+    <div class="row -has-gap">
+        <div class="col-sm-4">
+            <div class="C--widget type--1 -linear-maroon">
+                <div class="card__head">
+                    <h3 class="card__title">Current Period</h3>
+                </div>
+                <div class="card__right">
+                    <h3 class="card__content">@Model.Dashboard.CurrentPeriod</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="C--widget type--1 -linear-blue">
+                <div class="card__head">
+                    <h3 class="card__title">Current Stage</h3>
+                </div>
+                <div class="card__right">
+                    <h3 class="card__content">@Model.Dashboard.CurrentStage.StageName</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="C--widget type--1 -linear-purple">
+                <div class="card__head">
+                    <h3 class="card__title">Number of Candidates</h3>
+                </div>
+                <div class="card__right">
+                    <h3 class="card__content jsAutonumeric">@Model.Dashboard.NumberOfCandidates</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Dashboard.CurrentStage.StageLevel != 4)
+    {
+        <div class="row -has-gap">
+            <div class="col-sm-12">
+                <div class="C--table-card type--1 mt-2">
+                    <div class="card__head">
+                        <h3 class="card__title">Your Assignment Schedule</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="C--datatables type--1 -autoload">
+                            <table id="yourAssignmentScheduleTable" class="datatables ui celled table">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th style="width: 20%;">Activity</th>
+                                        <th style="width: 20%;">Schedule Date</th>
+                                        <th style="width: 20%;">Room</th>
+                                        <th style="width: 20%;">Total Submission</th>
+                                        <th style="width: 20%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.TrainerAssignmentSchedule.Count(); i++)
+                                    {
+                                        var item = Model.TrainerAssignmentSchedule.ElementAt(i);
+
+                                        <tr>
+                                            <td style="width: 20%;">
+                                                @if (!item.SubStageName.Equals(""))
+                                                {
+                                                    @item.SubStageName
+                                                }
+                                                else
+                                                {
+                                                    @item.StageName
+                                                }
+                                            </td>
+                                            <td style="width: 20%;">@item.Date.ToString("dd MMM yyyy") @item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                                            <td style="width: 20%;">@item.Room</td>
+                                            <td style="width: 20%;">@item.CountSubmission / @item.Qty</td>
+                                            <td style="width: 20%;">
+                                                <a-encoded asp-area="AssignmentArea" asp-controller="Trainer" asp-action="Index"
+                                                           asp-route-assignmentID="@item.IDAssignment"
+                                                           asp-route-scheduleID="@item.IDSchedule"
+                                                           class="C--button type--1 -theme-primary">
+                                                    View
+                                                </a-encoded>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row -has-gap">
+            <div class="col-sm-12">
+                <div class="C--table-card type--1 mt-2">
+                    <div class="card__head">
+                        <h3 class="card__title">Available Assignment Schedule</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="C--datatables type--1 -autoload">
+                            <table id="yourAssignmentScheduleTable" class="datatables ui celled table">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th style="width: 20%;">Activity</th>
+                                        <th style="width: 20%;">Schedule Date Time</th>
+                                        <th style="width: 20%;">Room</th>
+                                        <th style="width: 20%;">Total Submission</th>
+                                        <th style="width: 20%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.AvailableAssignmentSchedule.Count(); i++)
+                                    {
+                                        var item = Model.AvailableAssignmentSchedule.ElementAt(i);
+
+                                        <tr>
+                                            <td style="width: 20%;">
+                                                @if (!item.SubStageName.Equals(""))
+                                                {
+                                                    @item.SubStageName
+                                                }
+                                                else
+                                                {
+                                                    @item.StageName
+                                                }
+                                            </td>
+                                            <td style="width: 20%;">@item.Date.ToString("dd MMM yyyy") @item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                                            <td style="width: 20%;">@item.Room</td>
+                                            <td style="width: 20%;">@item.CountSubmission / @item.Qty</td>
+                                            <td style="width: 20%;">
+                                                <a-encoded asp-area="AssignmentArea" asp-controller="Trainer" asp-action="Index"
+                                                           asp-route-assignmentID="@item.IDAssignment"
+                                                           asp-route-scheduleID="@item.IDSchedule"
+                                                           class="C--button type--1 -theme-primary">
+                                                    View
+                                                </a-encoded>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row -has-gap">
+            <div class="col-sm-12">
+                <div class="C--table-card type--1 mt-2">
+                    <div class="card__head">
+                        <h3 class="card__title">Today's Interview</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="C--datatables type--1 -autoload">
+                            <table id="yourAssignmentScheduleTable" class="datatables ui celled table">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th style="width: 15%;">NIM</th>
+                                        <th style="width: 20%;">Name</th>
+                                        <th style="width: 20%;">Time</th>
+                                        <th style="width: 15%;">Room</th>
+                                        <th style="width: 15%;">Position</th>
+                                        <th style="width: 15%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.CandidateList.Count(); i++)
+                                    {
+                                        var item = Model.CandidateList.ElementAt(i);
+
+                                        <tr>
+                                            <td style="width: 15%;">@item.NIM</td>
+                                            <td style="width: 20%;">@item.Name.ToUpper()</td>
+                                            <td style="width: 20%;">@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                                            <td style="width: 15%;">@item.Room</td>
+                                            <td style="width: 15%;">@item.PositionName</td>
+                                            <td style="width: 15%;">
+                                                <a-encoded asp-area="ScoreArea" asp-controller="Trainer" asp-action="Index"
+                                                           asp-route-candidateID="@item.IDCandidate"
+                                                           asp-route-scheduleID="@item.IDSchedule"
+                                                           class="C--button type--1 -theme-primary">
+                                                    View
+                                                </a-encoded>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

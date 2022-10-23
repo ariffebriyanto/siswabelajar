@@ -1,0 +1,109 @@
+﻿@model OneStopRecruitment.Areas.LoginArea.ViewModels.Auth.LoginViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Login One Stop Recruitment";
+    Layout = null;
+
+    bool IsOpenRegistration = Convert.ToBoolean(TempData["IsOpenRegistration"]);
+
+    var ErrorMessage = Convert.ToString(TempData["ErrorMessage"]) ?? "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,700i|Material+Icons">
+    <link rel="stylesheet" href="~/assets/uni/login/css/style.css">
+    <link rel="stylesheet" href="~/assets/uni/bootstrap/css/style.css">
+    <link rel="stylesheet" href="~/dev/css/style.css">
+    <link rel="stylesheet" href="~/dev/css/color.css">
+</head>
+<body>
+    <div class="site" id="page">
+        <section class="M--login type--1 U--fixed-layout">
+            <div class="login__wrapper U--table -full-height">
+                <div class="login__box table__cell -vertical-align--middle">
+                    <div class="login__container">
+                        <div class="login__card C--card type--1 -remove-padding">
+                            <header class="login__header">
+                                <div class="U--table">
+                                    <div class="table__cell -auto-width">
+                                        <span class="ribbon"></span>
+                                    </div>
+                                    <div class="table__cell">
+                                    </div>
+                                </div>
+                            </header>
+                            <div class="login__subheader">
+                                <span>@ConstantConstraint.APP_NAME</span>
+                            </div>
+                            <div class="login__body">
+                                <form asp-area="LoginArea" asp-controller="Auth" asp-action="Login" onsubmit="showFormLoader();" class="login__form" method="POST" autocomplete="off">
+                                    @Html.AntiForgeryToken()
+                                    @if (ErrorMessage != "")
+                                    {
+                                        <div id="errorMessage" class="C--alert type--1 -is-custom-error margin-alert">
+                                            <span class="alert__label">
+                                                @ErrorMessage
+                                            </span>
+                                        </div>
+                                    }
+                                    <div class="form__field">
+                                        <div class="C--groupbox type--1">
+                                            <span class="groupbox__wrapper U--table">
+                                                <span class="groupbox__login table__cell -vertical-align--middle -auto-width">
+                                                    <i class="material-icons">person</i>
+                                                </span>
+                                                <span class="groupbox__component table__cell">
+                                                    <input asp-for="Login.Username" type="text" class="groupbox__textbox" placeholder="NIM / Username">
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form__field">
+                                        <div class="C--groupbox type--1">
+                                            <span class="groupbox__wrapper U--table">
+                                                <span class="groupbox__login table__cell -vertical-align--middle -auto-width">
+                                                    <i class="material-icons">https</i>
+                                                </span>
+                                                <span class="groupbox__component table__cell">
+                                                    <input asp-for="Login.Password" type="password" class="groupbox__textbox" placeholder="Password">
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form__action">
+                                        <button type="submit" class="C--button type--1 -theme-primary -full-width">
+                                            Login
+                                        </button>
+                                    </div>
+                                    <div id="formLoader" class="form__loader" style="display: none;">
+                                        <span class="C--loader type--1 -theme-primary"></span>
+                                        <span class="progress-text">@AlertConstraint.Login.LoggingIn</span>
+                                    </div>
+                                </form>
+                            </div>
+                            @if (IsOpenRegistration)
+                            {
+                                <footer class="login__footer">
+                                    <ul class="footer__links">
+                                        <li class="link__item">
+                                            <a asp-area="RegistrationArea" asp-controller="Main" asp-action="Index">Registration Form</a>
+                                        </li>
+                                    </ul>
+                                </footer>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/assets/uni/login/js/script.js"></script>
+    <script src="~/dev/js/script.js"></script>
+</body>
+</html>

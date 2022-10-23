@@ -1,0 +1,169 @@
+﻿@model OneStopRecruitment.Areas.UserArea.ViewModels.UserViewModel
+@using Model.DBConstraint
+
+<div class="C--table-card type--1">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-8">
+                <h3 class="card__title">Users</h3>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload">
+            <table id="tableUser" class="datatables ui celled table">
+                <thead class="table-head">
+                    <tr>
+                        <th class="set-table-width break-word sticky" style="width: 25%;">Name</th>
+                        <th class="set-table-width break-word sticky" style="width: 25%;">Username</th>
+                        <th class="set-table-width break-word sticky" style="width: 25%;">Email</th>
+                        <th class="set-table-width break-word sticky" style="width: 25%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.UserList.Count(); i++)
+                    {
+                        var item = Model.UserList.ElementAt(i);
+                        <tr>
+                            <td class="set-table-width break-word" style="width: 25%;">@item.Name.ToUpper()</td>
+                            <td class="set-table-width break-word" style="width: 25%;">@item.Username</td>
+                            <td class="set-table-width break-word" style="width: 25%;">@item.Email</td>
+                            <td class="set-table-width break-word td-center" style="width: 25%;">
+                                <input class="hidden_userId" type="hidden" value="@item.IDUser" />
+                                <a-encoded asp-area="UserArea" asp-controller="Staff" asp-action="UpdateUser"
+                                           asp-route-userID="@item.IDUser"
+                                           class="C--button button-type--1 -theme-primary -size--small material-icons"
+                                           onclick="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+                                    create
+                                </a-encoded>
+                                @if (!item.Username.Equals(Model.SessionUsername))
+                                {
+                                    <a class="C--button button-type--1 -theme-primary -size--small material-icons btnDeleteUser">delete</a>
+                                }
+                                <br />
+                                <a-encoded asp-area="UserArea" asp-controller="Staff" asp-action="UpdatePassword"
+                                           asp-route-userID="@item.IDUser"
+                                           class="C--button type--1 -theme-primary"
+                                           onclick="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+                                           style="margin-top:10px">
+                                    Update Password
+                                </a-encoded>
+                                <br />
+                                <a class="C--button type--1 -theme-primary btnResetPassword" style="margin-top:10px">Reset Password</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#tableUser').DataTable({
+
+        });
+    });
+
+    $(".btnDeleteUser").click(function () {
+        let IDUser = $(this).siblings(".hidden_userId").val();
+
+        Swal.fire({
+            title: 'Are you sure want to delete this user?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteUser", "Staff")',
+                    data: {
+                        userID: IDUser
+                    },
+                    beforeSend: function () {
+                        showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading');
+                    },
+                    success: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        $('#loadingMessage').on('hidden.bs.modal', function () {
+                            showAlert(result.status, result.message);
+
+                            $('#successMessage').on('hidden.bs.modal', function () {
+                                location.reload();
+                            });
+                        });
+                    },
+                    error: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        $('#loadingMessage').on('hidden.bs.modal', function () {
+                            showAlert(result.status, result.message);
+
+                            $('#failedMessage').on('hidden.bs.modal', function () {
+                                location.reload();
+                            });
+                        });
+                    }
+                });
+            }
+        })
+    });
+
+
+    $(".btnResetPassword").click(function () {
+        let IDUser = $(this).siblings(".hidden_userId").val();
+
+        Swal.fire({
+            title: 'Are you sure want to reset user password?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Reset',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ResetPassword", "Staff")',
+                    data: {
+                        userID: IDUser
+                    },
+                    beforeSend: function () {
+                        showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading');
+                    },
+                    success: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        if (result.status === `@BaseConstraint.NotificationType.Success`) {
+                            Swal.fire({
+                                title: 'Reset Password Success',
+                                html: `Your New Password : <b>${result.newPass}<b>`,
+                                icon: 'success'
+                            });
+                        }
+                        else {
+                            $('#loadingMessage').on('hidden.bs.modal', function () {
+                                showAlert(result.status, result.message);
+                            });
+                        }
+                    },
+                    error: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        $('#loadingMessage').on('hidden.bs.modal', function () {
+                            showAlert(result.status, result.message);
+                        });
+                    }
+                });
+            }
+        })
+    });
+</script>

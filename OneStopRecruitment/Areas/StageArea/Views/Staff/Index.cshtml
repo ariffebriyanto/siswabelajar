@@ -1,0 +1,57 @@
+﻿@model OneStopRecruitment.Areas.StageArea.ViewModels.Staff.StageResultViewModel
+@using Model.DBConstraint;
+@{
+    ViewData["Title"] = "Stage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<div class="C--table-card type--1">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-8">
+                <h3 class="card__title">Stages</h3>
+            </div>
+            <div class="col-sm-4 text-right">
+                <a asp-area="StageArea" asp-controller="Staff" asp-action="InsertStage" method="GET"
+                   class="button C--button type--1 -theme-primary"
+                   onclick="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+                    <i class="material-icons">add</i>
+                    Insert Stage
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <table id="tableStage" class="datatables ui celled table">
+                <thead class="table-head">
+                    <tr>
+                        <th class="set-table-width break-word sticky" style="--param-width: 650px;">Stage Name</th>
+                        <th class="set-table-width break-word sticky" style="--param-width: 200px;">Stage Level</th>
+                        <th class="set-table-width break-word sticky" style="--param-width: 75px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.StageList.Count(); i++)
+                    {
+                        var item = Model.StageList.ElementAt(i);
+                        <tr>
+                            <td class="set-table-width break-word" style="--param-width: 650px;">@item.StageName</td>
+                            <td class="set-table-width break-word" style="--param-width: 200px;">@item.StageLevel.ToString()</td>
+                            <td class="set-table-width break-word" style="--param-width: 75px;">
+                                <input class="hidden_stageId" type="hidden" value="@item.IDStage" />
+                                <a-encoded asp-area="StageArea" asp-controller="Staff" asp-action="UpdateStage" method="GET"
+                                           asp-route-stageID="@item.IDStage"
+                                           class="C--button button-type--1 -theme-primary -size--small material-icons"
+                                           onclick="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+                                    create
+                                </a-encoded>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

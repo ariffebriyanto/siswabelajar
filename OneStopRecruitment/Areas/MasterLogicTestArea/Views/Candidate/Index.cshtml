@@ -1,0 +1,243 @@
+﻿@model OneStopRecruitment.Areas.MasterLogicTestArea.ViewModels.Candidate.LogicTestViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Master Logic Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<hr class="no-margin" />
+
+@if (Model.Status == BaseConstraint.LogicTest.Done)
+{
+    <script>
+            $(document).ready(function () {
+                showAlert('@BaseConstraint.NotificationType.Failed', '@AlertConstraint.LogicTest.LogicTestDone');
+                $('#failedMessage').on('hidden.bs.modal', function () {
+                    history.back()
+                });
+            })
+    </script>    
+}
+else if (Model.Status == BaseConstraint.LogicTest.NotStarted)
+{
+<script>
+        $(document).ready(function () {
+            showAlert('@BaseConstraint.NotificationType.Failed', '@AlertConstraint.LogicTest.LogicTestNotStarted');
+            $('#failedMessage').on('hidden.bs.modal', function () {
+                history.back()
+            });
+        })
+</script>
+}
+else
+{
+    <div class="row m-top-20">
+        <div class="col-md-7">
+            @for (int i = 0; i < Model.QuestionList.Count; i++)
+            {
+                var item = Model.QuestionList.ElementAt(i);
+                <div class="m-bottom-50">
+                    <input id="@item.IDLogicTestQuestion" hidden />
+                    <!-- Question -->
+                    <div class="row">
+                        <div class="col-md-1">
+                            <span>@(i + 1) .</span>
+                        </div>
+                        <div class="col-md-11">
+                            @if (item.Type.Equals(BaseConstraint.OptionType.Image))
+                            {
+                                <img width="120" src="@item.QuestionImage" />
+                            }
+                            else
+                            {
+                                <b>@Html.Raw(item.QuestionText)</b>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row m-top-10">
+                        <div class="col-md-11 offset-md-1">
+                            @if (item.Answer.Equals("A"))
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="A" checked />
+                            }
+                            else
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="A" />
+                            }
+
+                            @if (item.FirstChoiceType.Equals(BaseConstraint.OptionType.Image))
+                            {
+                                <img width="120" src="@item.FirstChoiceImage" />
+                            }
+                            else
+                            {
+                                <span>@Html.Raw(item.FirstChoiceText)</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row m-top-10">
+                        <div class="col-md-11 offset-md-1">
+                            @if (item.Answer.Equals("B"))
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="B" checked />
+                            }
+                            else
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="B" />
+                            }
+
+                            @if (item.SecondChoiceType.Equals(BaseConstraint.OptionType.Image))
+                            {
+                                <img width="120" src="@item.SecondChoiceImage" />
+                            }
+                            else
+                            {
+                                <span>@Html.Raw(item.SecondChoiceText)</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row m-top-10">
+                        <div class="col-md-11 offset-md-1">
+                            @if (item.Answer.Equals("C"))
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="C" checked />
+                            }
+                            else
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="C" />
+                            }
+
+                            @if (item.ThirdChoiceType.Equals(BaseConstraint.OptionType.Image))
+                            {
+                                <img width="120" src="@item.ThirdChoiceImage" />
+                            }
+                            else
+                            {
+                                <span>@Html.Raw(item.ThirdChoiceText)</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row m-top-10">
+                        <div class="col-md-11 offset-md-1">
+                            @if (item.Answer.Equals("D"))
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="D" checked />
+                            }
+                            else
+                            {
+                                <input type="radio" name="rbAnswer-@item.IDLogicTestQuestion" class="rbAnswer m-right-10" value="D" />
+                            }
+
+                            @if (item.FourthChoiceType.Equals(BaseConstraint.OptionType.Image))
+                            {
+                                <img width="120" src="@item.FourthChoiceImage" />
+                            }
+                            else
+                            {
+                                <span>@Html.Raw(item.FourthChoiceText)</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button id="btnFinish" class="C--button type--1 -theme-primary">Finish</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div id="container-timer" class="p-20">
+                Time Left : <span id="timer"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {            
+            let hours = '@Model.TimeLeft.Hours'
+            let minutes = '@Model.TimeLeft.Minutes'
+            let seconds = '@Model.TimeLeft.Seconds'
+
+            setInterval(function () {
+                if (minutes != 0 || hours != 0 || seconds != 0)
+                    seconds -= 1;
+
+                if (seconds == -1) {
+                    seconds = 59;
+                    if (minutes >= 0) {
+                        minutes -= 1;
+                    }
+                    if (minutes == -1) {
+                        minutes = 59;
+                        if (hours > 0) {
+                            hours -= 1;
+                        }
+                    }
+                }
+                showTimer(hours, minutes, seconds)
+            }, 1000);
+
+            function showTimer(hours, minutes, seconds) {
+                if (hours <= 9) hours = "0" + hours;
+                if (minutes <= 9) minutes = "0" + minutes;
+                if (seconds <= 9) seconds = "0" + seconds;
+
+                $('#timer').html(`${hours}:${minutes}:${seconds}`)
+            }
+
+
+            $(document).on('click', '.rbAnswer', function () {
+                let Answer = $(this).val();
+                let IDLogicTestQuestion = $(this).closest('.row').siblings('input')[0].id;
+                let IDSchedule = '@Model.Schedule.IDSchedule'
+
+                $.ajax({
+                    method: 'POST',
+                    url: '@Url.Action("InsertUpdateAnswer", "Candidate")',
+                    data: {
+                        IDLogicTestQuestion, Answer, IDSchedule
+                    },
+                    success: function (result) {
+                        if (result.status == '@BaseConstraint.NotificationType.Failed') {
+                            showAlert(result.status, result.message);
+                            $('#failedMessage').on('hidden.bs.modal', function () {
+                                history.back()
+                            });
+                        }
+                    },
+                    error: function (error) {
+
+                    }
+                })
+            })
+
+            $('#btnFinish').click(function () {
+                Swal.fire({
+                    title: 'Are you sure want to end logic test?',
+                    text: "Please make sure that you already have checked all your answers!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showAlert('@BaseConstraint.NotificationType.Success', '@AlertConstraint.LogicTest.LogicTestFinish');
+                        $('#successMessage').on('hidden.bs.modal', function () {
+                            history.back();
+                        });
+                    }
+                })            
+            })
+        })
+    </script>
+}

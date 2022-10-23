@@ -1,0 +1,228 @@
+﻿@model OneStopRecruitment.Areas.DashboardArea.ViewModels.Staff.DashboardStaffViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div>
+    <div class="row -has-gap">
+        <div class="col-sm-4">
+            <div class="C--widget type--1 -linear-maroon">
+                <div class="card__head">
+                    <h3 class="card__title">Current Period</h3>
+                </div>
+                <div class="card__right">
+                    <h3 class="card__content">@Model.DashboardStaff.CurrentPeriod</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="C--widget type--1 -linear-blue">
+                <div class="card__head">
+                    <h3 class="card__title">Current Stage</h3>
+                </div>
+                <div class="card__right">
+                    <h3 class="card__content">@Model.DashboardStaff.CurrentStage</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="C--widget type--1 -linear-purple">
+                <div class="card__head">
+                    <h3 class="card__title">Number of Candidates</h3>
+                </div>
+                <div class="card__right">
+                    <h3 class="card__content jsAutonumeric">@Model.DashboardStaff.NumberOfCandidates</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row -has-gap">
+        <div class="col-sm-12">
+            <div class="C--table-card type--1 mt-2">
+                <div class="card__head">
+                    <h3 class="card__title">Notification List</h3>
+                </div>
+                <div class="card__body">
+                    <div class="C--datatables type--1 -autoload">
+                        <table id="notificationTable" class="datatables ui celled table">
+                            <thead class="table-head">
+                                <tr>
+                                    <th style="width: 20%">Date & Time</th>
+                                    <th style="width: 30%;">Subject</th>
+                                    <th style="width: 50%;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < Model.BlastEmailList.Count(); i++)
+                                {
+                                    var item = Model.BlastEmailList.ElementAt(i);
+
+                                    <tr>
+                                        <td style="width: 20%;"><span style="display: none;">@item.BlastDateTime.ToString("yyyyMMddHHmm")</span>@item.BlastDateTime.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td style="width: 30%;">@item.Subject</td>
+                                        <td style="width: 50%; white-space: pre-wrap;">@Html.Raw(item.Description)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="row -has-gap">
+        <div class="col">
+            <div class="C--table-card type--1">
+                <div class="card__head">
+                    <h3 class="card__title">Upcoming Schedule</h3>
+                </div>
+                <div class="card__body">
+                    <div class="C--datatables type--1 -autoload">
+                        <table id="tableUpcomingSchedule" class="datatables ui celled table">
+                            <thead class="table-head">
+                                <tr>
+                                    <th style="width: 500px;">Activity</th>
+                                    <th style="width: 300px;">Date</th>
+                                    <th style="width: 250px;">Time</th>
+                                    <th style="width: 200px;">Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < Model.DashboardStaff.UpcomingSchedules.Count(); i++)
+                                {
+                                    var item = Model.DashboardStaff.UpcomingSchedules.ElementAt(i);
+                                    <tr>
+                                        <td style="width: 500px;">
+                                            @if (item.SubStageName == null || item.SubStageName.Trim() == "")
+                                            {
+                                                <text>@item.StageName</text>
+                                            }
+                                            else
+                                            {
+                                                <text>@item.StageName (@item.SubStageName)</text>
+                                            }
+                                        </td>
+                                        <td style="width: 300px;"><span style="display: none;">@item.Date.ToString("yyyyMMdd")</span>@item.Date.ToString("ddd, dd MMM yyyy")</td>
+                                        <td style="width: 250px;">@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                                        <td style="width: 200px;">@item.Room</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row -has-gap">
+    <div class="col-sm-12">
+        <div class="C--table-card type--1">
+            <div class="card__head">
+                <h3 class="card__title">Schedule List</h3>
+            </div>
+            <div class="card__body">
+                <div class="C--datatables type--1 -autoload">
+                    <table id="listScheduleTable" class="datatables ui celled table">
+                        <thead class="table-head">
+                            <tr>
+                                <th style="width: 15%">Activity</th>
+                                <th style="width: 15%;">Date</th>
+                                <th style="width: 15%;">Time</th>
+                                <th style="width: 15%;">Room</th>
+                                <th style="width: 15%;">Limit</th>
+                                <th style="width: 15%;">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.ScheduleList.Count(); i++)
+                            {
+                                var item = Model.ScheduleList.ElementAt(i);
+
+                                <tr>
+                                    <td style="width: 15%;">
+                                        @if (item.SubStageName.Equals(""))
+                                        {
+                                            @item.StageName
+                                        }
+                                        else
+                                        {
+                                            @item.SubStageName
+                                        }
+                                    </td>
+                                    <td style="width: 15%;"><span style="display: none;">@item.Date.ToString("yyyyMMdd")</span>@item.Date.ToString("dd MMM yyyy")</td>
+                                    <td style="width: 15%;">@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                                    <td style="width: 15%;">@item.Room</td>
+                                    <td style="width: 15%;">@item.Limit</td>
+                                    <td style="width: 15%;">@item.Qty</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row -has-gap">
+    <div class="col-sm-12">
+        <div class="C--table-card type--1">
+            <div class="card__head">
+                <h3 class="card__title">Assignment</h3>
+            </div>
+            <div class="card__body">
+                <div class="C--datatables type--1 -autoload">
+                    <table id="assignmentTable" class="datatables ui celled table">
+                        <thead class="table-head">
+                            <tr>
+                                <th style="width: 25%">Activity</th>
+                                <th style="width: 25;">Start Date</th>
+                                <th style="width: 25%;">End Date</th>
+                                <th style="width: 25%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.AssignmentList.Count(); i++)
+                            {
+                                var item = Model.AssignmentList.ElementAt(i);
+
+                                <tr>
+                                    <td style="width: 25%;">
+                                        @if (item.SubStageName.Equals(""))
+                                        {
+                                            @item.StageName
+                                        }
+                                        else
+                                        {
+                                            @item.SubStageName
+                                        }
+                                    </td>
+                                    <td style="width: 25%;"><span style="display: none;">@item.DeadlineStartDate.ToString("yyyyMMdd")</span>@item.DeadlineStartDate.ToString("dd MMM yyyy")</td>
+                                    <td style="width: 25%;"><span style="display: none;">@item.DeadlineEndDate.ToString("yyyyMMdd")</span>@item.DeadlineEndDate.ToString("dd MMM yyyy")</td>
+                                    <td style="width: 25%;">
+                                        <a-encoded asp-area="DashboardArea" asp-controller="Staff" asp-action="AssignmentQuestion"
+                                                    asp-route-assignmentID="@item.IDAssignment"
+                                                    class="C--button type--1 -theme-primary">
+                                            View
+                                        </a-encoded>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        $(
+            () => {
+            $('#notificationTable').dataTable({
+                "order": []
+            });
+        })
+</script>

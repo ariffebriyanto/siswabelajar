@@ -1,0 +1,162 @@
+﻿@model OneStopRecruitment.Areas.AssignmentArea.ViewModels.Trainer.AssignmentTrainerViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Model.Subdomains.AssignmentSubdomain.Trainer.MasterSchedule Schedule = Model.Schedule;
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+
+<section class="section-divider">
+    <div class="C--table-card type--1">
+        <div class="card__body">
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Room</b>
+                </div>
+                <div>
+                    @Schedule.Room
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Activity</b>
+                </div>
+                <div>
+                    @Schedule.StageName
+                    @if (!Schedule.SubStageName.Equals(""))
+                    {
+                        <span>(@Schedule.SubStageName)</span>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Date & Time</b>
+                </div>
+                <div>
+                    @Schedule.Date.ToString("ddd, dd MMM yyyy") @Schedule.StartTime.ToString().Substring(0, 5) - @Schedule.EndTime.ToString().Substring(0, 5)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Total Submission</b>
+                </div>
+                <div>
+                    @Schedule.CountSubmission / @Schedule.Qty
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Status</b>
+                </div>
+                <div>
+                    @if (Schedule.Status)
+                    {
+                        <span class="completed">@BaseConstraint.Assignemnt.Completed</span>
+                    }
+                    else
+                    {
+                        <span class="not-completed">@BaseConstraint.Assignemnt.NotCompleted</span>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Assignment Notes</b>
+                </div>
+                <div>
+                    @Model.Assignment.Notes
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="row m-top-20 m-bottom-20">
+    <div class="col-md-6">
+        <a-encoded asp-area="AssignmentArea" asp-controller="Trainer" asp-action="DownloadQuestion"
+                   asp-route-filePath="@Model.Assignment.AssignmentFileName"
+                   class="C--button type--1 -theme-primary">
+            Download Question
+        </a-encoded>
+    </div>
+</div>
+<div class="row -has-gap">
+    <div class="col-sm-12">
+        <div class="C--table-card type--1 mt-2">
+            <div class="card__head">
+                <h3 class="card__title">Candidate</h3>
+            </div>
+            <div class="card__body">
+                <div class="C--datatables type--1 -autoload">
+                    <table id="candidateTable" class="datatables ui celled table">
+                        <thead class="table-head">
+                            <tr>
+                                <th style="width: 20%;">Name</th>
+                                <th style="width: 20%;">NIM</th>
+                                <th style="width: 20%;">Scoring Status</th>
+                                <th style="width: 20%;">Submission</th>
+                                <th style="width: 20%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.CandidateList.Count(); i++)
+                            {
+                                var item = Model.CandidateList.ElementAt(i);
+
+                                <tr>
+                                    <td style="width: 20%;">@item.Name.ToUpper()</td>
+                                    <td style="width: 20%;">@item.NIM</td>
+                                    <td style="width: 20%;">
+                                        @if (item.ScoringStatus)
+                                        {
+                                            <span class="completed">@BaseConstraint.Assignemnt.Completed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="not-completed">@BaseConstraint.Assignemnt.NotCompleted</span>
+                                        }
+                                    </td>
+                                    <td style="width: 20%;">
+                                        @if (!item.SubmissionFilePath.Equals(""))
+                                        {
+                                            <a-encoded asp-area="AssignmentArea" asp-controller="Trainer" asp-action="DownloadSubmission"
+                                                       asp-route-filePath="@item.SubmissionFilePath"
+                                                       class="C--button button-type--1 -theme-primary -size--small material-icons">
+                                                get_app
+                                            </a-encoded>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+                                    <td style="width: 20%;">
+                                        <a-encoded asp-area="ScoreArea" asp-controller="Trainer" asp-action="Index"
+                                                   asp-route-candidateID="@item.IDCandidate"
+                                                   asp-route-assignmentID="@Schedule.IDAssignment"
+                                                   asp-route-scheduleID="@Schedule.IDSchedule"
+                                                   class="C--button type--1 -theme-primary">
+                                            Score
+                                        </a-encoded>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+
+<script>
+    $(document).ready(function () {
+        $('#candidateTable').dataTable({
+            order: []
+        })
+    });
+</script>

@@ -1,0 +1,124 @@
+﻿:root {
+    --error-color: #D12F2E;
+    --warning-color: #FF9024;
+    --success-color: #74B71B;
+    --loading-color: #783292;
+    --black-color: #000000;
+}
+
+.modal-content {
+    border-color: transparent;
+    border-radius: 10px;
+}
+
+.modal-message-success {
+    color: var(--success-color);
+    font-size: 1.75rem;
+}
+
+.modal-message-failed {
+    color: var(--error-color);
+    font-size: 1.75rem;
+}
+
+.modal-message-loading {
+    color: var(--loading-color);
+    font-size: 1.75rem;
+}
+
+#successMessage .modal-dialog, #failedMessage .modal-dialog, #loadingMessage .modal-dialog {
+    max-width: 450px;
+}
+
+#successSvg .path {
+    stroke: var(--success-color);
+    -webkit-transition: stroke 0.5s ease-in-out;
+    -o-transition: stroke 0.5s ease-in-out;
+    transition: stroke 0.5s ease-in-out;
+}
+
+#failedSvg .path {
+    stroke: var(--error-color);
+    -webkit-transition: stroke 0.5s ease-in-out;
+    -o-transition: stroke 0.5s ease-in-out;
+    transition: stroke 0.5s ease-in-out;
+}
+
+#loadingSvg {
+    width: 48px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+    #loadingSvg g g .circle {
+        fill: var(--loading-color);
+    }
+
+svg {
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+    display: block;
+}
+
+.path {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0;
+}
+
+    .path.circle {
+        -webkit-animation: dash .9s ease-in-out;
+        animation: dash .9s ease-in-out;
+    }
+
+    .path.line {
+        stroke-dashoffset: 1000;
+        -webkit-animation: dash .9s .35s ease-in-out forwards;
+        animation: dash .9s .35s ease-in-out forwards;
+    }
+
+    .path.check {
+        stroke-dashoffset: -100;
+        -webkit-animation: dash-check .9s .35s ease-in-out forwards;
+        animation: dash-check .9s .35s ease-in-out forwards;
+    }
+
+@-webkit-keyframes dash {
+    0% {
+        stroke-dashoffset: 1000;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dashoffset: 1000;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@-webkit-keyframes dash-check {
+    0% {
+        stroke-dashoffset: -100;
+    }
+
+    100% {
+        stroke-dashoffset: 900;
+    }
+}
+
+@keyframes dash-check {
+    0% {
+        stroke-dashoffset: -100;
+    }
+
+    100% {
+        stroke-dashoffset: 900;
+    }
+}

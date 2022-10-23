@@ -1,0 +1,55 @@
+﻿@model OneStopRecruitment.Areas.ModuleConfigurationArea.ViewModels.Staff.ModuleConfigurationFormViewModel
+@using Model.DBConstraint
+@{
+    string Action = "";
+    if (Model.ModuleForm.IDModule == Guid.Empty)
+    {
+        Action = "InsertModule";
+        ViewData["Title"] = "Insert Module";
+    }
+    else
+    {
+        Action = "UpdateModule";
+        ViewData["Title"] = "Update Module";
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div>
+        <form class="M--form type--1" asp-area="ModuleConfigurationArea" asp-controller="Staff" asp-action="@Action"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off">
+            <input type="hidden" asp-for="ModuleForm.IDModule" />
+            <div class="form__field">
+                <label class="field__label">Role<span class="mandatory">*</span></label>
+                <div class="C--combobox type--1 -autoload card__text">
+                    <select asp-for="ModuleForm.IDRole" asp-items="@Model.RoleList" class="combobox__component">
+                        <option value="" selected disabled hidden>@DropdownConstraint.Role</option>
+                    </select>
+                </div>
+                <span asp-validation-for="ModuleForm.IDRole" class="text-error"></span>
+            </div>
+            <div class="form__field">
+                <label class="field__label">Module Name<span class="mandatory">*</span></label>
+                <input id="txtModuleName" type="text" class="C--textbox type--1" asp-for="ModuleForm.ModuleName" placeholder="Module Name">
+                <span asp-validation-for="ModuleForm.ModuleName" class="text-error"></span>
+            </div>
+            <div class="form__field">
+                <label class="field__label">Route<span class="mandatory">*</span></label>
+                <div class="text-error">@AlertConstraint.ModuleConfiguration.RouteNotes</div>
+                <textarea id="txtRoute" class="C--textarea type--1" rows="10" asp-for="ModuleForm.Route" placeholder="Route"></textarea>
+                <span asp-validation-for="ModuleForm.Route" class="text-error"></span>
+            </div>
+            <div class="form__field">
+                <label class="field__label">Module Level<span class="mandatory">*</span></label>
+                <input id="nbrModuleLevel" type="number" min="0" max="@Int32.MaxValue" class="C--textbox type--1" asp-for="ModuleForm.ModuleLevel" placeholder="Module Level">
+                <span asp-validation-for="ModuleForm.ModuleLevel" class="text-error"></span>
+            </div>
+            <div class="form__action">
+                <button type="submit" class="C--button type--1 -theme-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</section>

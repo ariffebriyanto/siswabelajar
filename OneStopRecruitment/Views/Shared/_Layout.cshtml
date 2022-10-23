@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    @if (!ViewData["Title"].Equals(""))
+    {
+        <title>@ViewData["Title"]</title>
+    }
+    else
+    {
+        <title>One Stop Recruitment</title>
+    }
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700,700i|Material+Icons">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/assets/uni/bootstrap/css/style.css">
+    <link rel="stylesheet" href="~/lib/semantic-ui/transition.min.css">
+    <link rel="stylesheet" href="~/lib/semantic-ui/dropdown.min.css">
+    <link rel="stylesheet" href="~/lib/semantic-ui/table.min.css">
+    <link rel="stylesheet" href="~/lib/sweetalert2/package/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="~/dev/css/style.css">
+    <link rel="stylesheet" href="~/dev/css/color.css">
+    <link rel="stylesheet" href="~/css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="~/css/bootstrap-datepicker3.standalone.css">
+    <link rel="stylesheet" href="~/css/jquery-timepicker.min.css">
+    <link rel="stylesheet" href="~/css/animate.css" />
+    <link rel="stylesheet" href="~/dev/css/alert.css">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @*<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>*@
+    <script src="~/lib/sweetalert2/package/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="~/lib/semantic-ui/transition.min.js"></script>
+    <script type="text/javascript" src="~/lib/semantic-ui/dropdown.min.js"></script>
+    @*<script src="~/lib/chartjs/dist/Chart.min.js"></script>
+        <script src="~/lib/chartjs/dist/Chart.datalabels.min.js"></script>
+        <script src="~/dev/js/pre.js"></script>*@
+    <script src="~/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/js/jquery-timepicker.min.js"></script>
+</head>
+<body>
+    <div class="site M--wrapper type--1" id="page">
+        @if (TempData["ViewNotifications"] != null)
+        {
+            @await Html.PartialAsync("_ViewNotification", Newtonsoft.Json.JsonConvert.DeserializeObject<List<PopUpNotification>>(TempData["ViewNotifications"].ToString()));
+        }
+        @await Component.InvokeAsync("Header")
+        @await Component.InvokeAsync("SideBar")
+        <main class="main--content">
+            <section class="module--container">
+                <div class="container--fluid">
+                    @RenderBody()
+                </div>
+            </section>
+        </main>
+    </div>
+    <link rel="stylesheet" href="~/dev/css/custom-sweetalert.css">
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/assets/uni/bootstrap/js/script.js"></script>
+    <script src="~/lib/semantic-ui/dropdown.min.js"></script>
+    <script src="~/lib/autonumeric/autonumeric.min.js"></script>
+    <script src="~/dev/js/post.js"></script>
+    <script src="~/dev/js/script.js"></script>
+    <script src="~/dev/js/alert.js"></script>
+    <script src="~/js/animate.js" asp-append-version="true"></script>
+</body>
+</html>

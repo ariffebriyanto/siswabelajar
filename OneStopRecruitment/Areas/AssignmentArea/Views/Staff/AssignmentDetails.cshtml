@@ -1,0 +1,118 @@
+﻿@model OneStopRecruitment.Areas.AssignmentArea.ViewModels.Staff.AssignmentDetailsViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Assignment Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div class="C--table-card type--1">
+        <div class="card__body">
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Period</b>
+                </div>
+                <div>
+                    @Model.Schedule.PeriodName
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Activity</b>
+                </div>
+                <div>
+                    @if (Model.Schedule.SubStageName == null || Model.Schedule.SubStageName.Trim() == "")
+                    {
+                        <text>@Model.Schedule.StageName</text>
+                    }
+                    else
+                    {
+                        <text>@Model.Schedule.StageName (@Model.Schedule.SubStageName)</text>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Schedule</b>
+                </div>
+                <div>
+                    @Model.Schedule.ScheduleDate.ToString("ddd, dd MMM yyyy") @Model.Schedule.ScheduleStartTime.ToString(@"hh\:mm") - @Model.Schedule.ScheduleEndTime.ToString(@"hh\:mm")
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Room</b>
+                </div>
+                <div>
+                    @Model.Schedule.Room
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Participant</b>
+                </div>
+                <div>
+                    @Model.Schedule.Quantity / @Model.Schedule.Limit
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Submission Date</b>
+                </div>
+                <div>
+                    @Model.Schedule.DeadlineStartDate.ToString("ddd, dd MMM yyyy") - @Model.Schedule.DeadlineEndDate.ToString("ddd, dd MMM yyyy")
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Assignment Reviewer</b>
+                </div>
+                <div>
+                    @Model.Schedule.TrainerName
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section-divider">
+    <div class="C--table-card type--1">
+        <div class="card__head">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h3 class="card__title">Submissions</h3>
+                </div>
+            </div>
+        </div>
+        <div class="card__body">
+            <div class="C--datatables type--1 -autoload">
+                <table id="tableAssignmentConfiguration" class="datatables ui celled table">
+                    <thead class="table-head">
+                        <tr>
+                            <th class="set-table-width break-word sticky" style="--param-width: 200px;">NIM</th>
+                            <th class="set-table-width break-word sticky" style="--param-width: 500px;">Name</th>
+                            <th class="set-table-width break-word sticky" style="--param-width: 150px;">Submission File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.SubmissionList.Count(); i++)
+                        {
+                            var item = Model.SubmissionList.ElementAt(i);
+                            <tr>
+                                <td class="set-table-width break-word" style="--param-width: 200px;">@item.NIM</td>
+                                <td class="set-table-width break-word" style="--param-width: 500px;">@item.Name.ToUpper()</td>
+                                <td class="set-table-width break-word" style="--param-width: 150px;">
+                                    <a asp-area="AssignmentArea" asp-controller="Staff" asp-action="DownloadSubmissionAnswerFile"
+                                       asp-route-fileName="@item.FilePath"
+                                       class="C--button button-type--1 -theme-primary -size--small material-icons">
+                                        get_app
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,109 @@
+﻿@model OneStopRecruitment.Areas.AssignmentArea.ViewModels.Candidate.AssignmentCandidateViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string Action = "";
+
+    if(Model.LastSubmission == null)
+    {
+        Action = "InsertAssignment";
+    }
+    else
+    {
+        Action = "UpdateAssignment";
+    }
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">    
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="row" style="margin-bottom:20px;">
+                <div class="col-md-12">
+                    <label class="field__label"><b>Submit Period</b></label>
+                    <br />
+                    <label class="field__label">@Model.Assignment.DeadlineStartDate?.ToString("ddd, dd MMM yyyy") - @Model.Assignment.DeadlineEndDate?.ToString("ddd, dd MMM yyyy")</label>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:20px;">
+                <div class="col-md-12">
+                    <label class="field__label"><b>Notes From Trainer</b></label>
+                    <br />
+                    <span>@Html.Raw(Model.Assignment.Notes)</span>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:20px;">
+                <div class="col-md-12">
+                    <a-encoded asp-area="AssignmentArea" asp-controller="Candidate" asp-action="DownloadQuestion"
+                               asp-route-filePath="@Model.Assignment.AssignmentFileName"
+                               class="C--button type--1 -theme-primary">
+                        Download Question
+                    </a-encoded>                    
+                </div>
+            </div>
+
+            <hr class="no-margin m-50" />
+
+            <form class="M--form type--1" asp-area="AssignmentArea" asp-controller="Candidate" asp-action="@Action"
+                  onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+                  method="POST" autocomplete="off" enctype="multipart/form-data">
+
+                <input asp-for="@Model.IDAssignment" hidden />
+                <input asp-for="@Model.IDSubmission" hidden />
+
+                <div class="row m-top-20">
+                    <div class="col-md-12">
+                        <header class="C--block-header type--1">
+                            <h2 class="section__title">Upload Assignment</h2>
+                        </header>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="field__label">Notes</label>
+                        <textarea asp-for="Submission.Notes" id="txtNotes" class="C--textarea type--1" rows="3" cols="40" placeholder="Notes for reviewer">@Model.Submission.Notes</textarea>
+                    </div>
+                </div>
+
+                <div class="row m-top-20">
+                    <div class="col-md-12">
+                        <label class="field__label">File<span class="mandatory">*</span></label>
+                        <input type="file" asp-for="Submission.AssignmentFile" class="form-control-file" />
+                        <span asp-validation-for="Submission.AssignmentFile" class="text-error"></span>
+                    </div>
+                </div>
+
+                <div class="row m-top-20">
+                    <div class="col-md-12">
+                        <button class="C--button type--1 -theme-primary btnSubmit">Submit</button>
+                    </div>
+                </div>
+            </form>                
+
+            @if (Model.LastSubmission != null)
+            {
+                <div class="row m-top-20">
+                    <div class="col-md-12">
+                        <label class="field__label mandatory">Last Submitted : <span>@Model.LastSubmission.LastSubmit.ToString("dd MMM yyyy HH:mm")</span></label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <a-encoded asp-area="AssignmentArea" asp-controller="Candidate" asp-action="DownloadPreviousSubmission"
+                                   asp-route-filePath="@Model.LastSubmission.FilePath"
+                                   class="C--button type--1 -theme-primary">
+                            Download Previous Submission
+                        </a-encoded>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>    
+</section>

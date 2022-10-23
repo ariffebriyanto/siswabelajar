@@ -1,0 +1,125 @@
+﻿@model OneStopRecruitment.Areas.MasterScoringComponentArea.ViewModels.Staff.MasterScoringComponentViewModel
+@{
+    ViewData["Title"] = "Master Scoring Component";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<div class="C--table-card type--1 mt-2">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3 class="card__title">Master Scoring Component</h3>
+            </div>
+            <div class="col-sm-8 text-right">
+                <a asp-action="InsertScoringComponentType" asp-area="MasterScoringComponentArea" asp-controller="Staff" method="GET"
+                   class="button C--button type--1 -theme-primary card__multiple__button">
+                    <i class="material-icons">add</i>
+                    Insert Scoring Component Type
+                </a>
+                <a asp-action="InsertScoringComponent" asp-area="MasterScoringComponentArea" asp-controller="Staff" method="GET"
+                   class="button C--button type--1 -theme-primary card__multiple__button">
+                    <i class="material-icons">add</i>
+                    Insert Scoring Component
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <form id="form-view-period">
+                <table class="datatables ui celled table">
+                    <thead class="table-head">
+                        <tr>
+                            <th style="width: 15%;">Period</th>
+                            <th style="width: 15%;">Stage</th>
+                            <th style="width: 15%;">Substage</th>
+                            <th style="width: 15%;">Scoring Component</th>
+                            <th style="width: 15%;">Min Score</th>
+                            <th style="width: 15%;">Max Score</th>                            
+                            <th style="width: 10%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.ScoringComponentList.Count(); i++)
+                        {
+                            var item = Model.ScoringComponentList.ElementAt(i);
+
+                            <tr>
+                                <td style="width: 15%;">@item.PeriodName</td>
+                                <td style="width: 15%;">@item.StageName</td>
+                                <td style="width: 15%;">@item.SubStageName</td>
+                                <td style="width: 15%;">@item.ScoringComponentText</td>
+                                <td style="width: 15%;">@item.MinScore</td>
+                                <td style="width: 15%;">@item.MaxScore</td>
+                                <td style="width: 10%;">
+                                    <a-encoded asp-route-scoringComponentID="@item.IDScoringComponent" asp-action="UpdateScoringComponent" asp-area="MasterScoringComponentArea" asp-controller="Staff" method="GET"
+                                               class="C--button button-type--2 -theme-primary -size--small material-icons editScoringComponent">
+                                        edit
+                                    </a-encoded>
+                                    <a id="@item.IDScoringComponent" class="C--button button-type--2 -theme-primary -size--small material-icons deleteScoringComponent" style="color: #783292; cursor:pointer;">
+                                        delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        function alertSuccess() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Your scoring component has been deleted.'
+            }).then((result) => {
+                location.reload();
+            })
+        }
+
+        function alertError() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Please try again'
+            })
+        }
+
+        $('.deleteScoringComponent').on('click', function () {
+            let IDScoringComponent = this.id;
+            Swal.fire({
+                title: 'Are you sure want to delete this scoring component?',                
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Delete
+                    $.ajax({
+                        'url': '@Url.Action("DeleteScoringComponent", "Staff")',
+                        'method' : 'POST',
+                        'data': {
+                            IDScoringComponent
+                        },
+                        success: function (result) {
+                            if (result) {
+                                alertSuccess();
+                                return;
+                            }
+                            alertError();
+                        },
+                        error: function (error) {
+                            alertError();
+                        }
+                    })
+                }
+            })
+        })
+    })
+</script>

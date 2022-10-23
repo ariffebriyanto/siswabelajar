@@ -1,0 +1,23 @@
+﻿@model OneStopRecruitment.Areas.MasterLogicTestArea.ViewModels.Staff.MasterLogicTestViewModel
+@using Model.DBConstraint; 
+@{
+    ViewData["Title"] = "Insert Question Type";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <form class="M--form type--1" asp-action="InsertQuestionType" asp-area="MasterLogicTestArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        @Html.AntiForgeryToken()
+        <div class="form__field">
+            <label class="field__label">Question Type<span class="mandatory">*</span></label>
+            <input asp-for="LogicTestQuestionType.QuestionType" type="text" class="C--textbox type--1" value="@Model.LogicTestQuestionType.QuestionType" autocomplete="off">
+            <span asp-validation-for="LogicTestQuestionType.QuestionType" class="text-error"></span>
+        </div>
+        <div class="form__action">
+            <button class="button C--button type--1 -theme-primary">Submit</button>
+        </div>
+    </form>
+</section>

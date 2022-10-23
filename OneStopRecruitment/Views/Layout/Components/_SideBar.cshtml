@@ -1,0 +1,20 @@
+﻿@model OneStopRecruitment.ViewModels.SideBarViewModel
+
+<div class="wrapper__sidebar">
+    <aside class="M--sidebar type--1">
+        <nav class="sidebar__list">
+            <ul class="list">
+                @foreach (var item in Model.SideBarList)
+                {
+                    <li class="list__item U--table">
+                        <span class="table__cell">
+                            <label class="item__label">@item.ModuleName</label>
+                        </span>
+                        <a asp-area="@item.ModuleArea" asp-controller="@item.ModuleController" asp-action="@item.ModuleAction" class="item__permalink U--overlay-layout"></a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </aside>
+    <div class="sidebar__overlay U--fixed-layout"></div>
+</div>

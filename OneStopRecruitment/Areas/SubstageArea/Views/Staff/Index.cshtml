@@ -1,0 +1,57 @@
+﻿@model OneStopRecruitment.Areas.SubstageArea.ViewModels.SubstageViewModel
+@{
+    ViewData["Title"] = "Substage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<div class="C--table-card type--1 mt-2">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3 class="card__title">Substages</h3>
+            </div>
+            <div class="col-sm-8 text-right">                
+                <form asp-action="InsertSubstage" asp-area="SubstageArea" asp-controller="Staff" method="GET">
+                    <button class="button C--button type--1 -theme-primary">
+                        <i class="material-icons">add</i>
+                        Insert Substage
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <table class="datatables ui celled table">
+                <thead class="table-head">
+                    <tr>
+                        <th style="width: 40%;">Substage Name</th>
+                        <th style="width: 40%;">Stage Name</th>
+                        <th style="width: 20%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.SubStageList.Count(); i++)
+                    {
+                        var item = Model.SubStageList.ElementAt(i);
+                        <tr>
+                            <td style="width: 40%;">@item.SubStageName</td>
+                            <td style="width: 40%;">@item.StageName</td>
+                            <td style="width: 20%;">
+                                <a asp-route-subStageID="@item.IDSubStage" asp-action="UpdateSubstage" asp-area="SubstageArea" asp-controller="Staff" method="GET"
+                                   class="C--button button-type--2 -theme-primary -size--small material-icons editSubStage">
+                                    edit
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+</script>

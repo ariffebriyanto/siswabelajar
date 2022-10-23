@@ -1,0 +1,43 @@
+﻿@model OneStopRecruitment.Areas.MasterLogicTestArea.ViewModels.Staff.MasterLogicTestViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Pick Question";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div class="C--combobox-card type--1">
+        <form class="M--form type--1" asp-action="ViewPickQuestion" asp-area="MasterLogicTestArea" asp-controller="Staff"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off">
+            <div class="card__body">
+                <div id="sectionDDLRole" class="form__field">
+                    <h3 class="card__title label">Period</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select asp-for="@Model.IDPeriod" class="combobox__component">
+                            @for (var i = 0; i < Model.PeriodList.Count(); i++)
+                            {
+                                var item = Model.PeriodList.ElementAt(i);
+                                <option value="@item.IDPeriod">@item.PeriodName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="text-right">                    
+                    <button class="button C--button type--1 -theme-primary">
+                        <i class="material-icons">search</i>
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="section-divider">
+    @if (Model.IDPeriod != 0)
+    {
+        @await Component.InvokeAsync("TablePickedQuestion", new { IDPeriod = Model.IDPeriod })
+    }
+</section>

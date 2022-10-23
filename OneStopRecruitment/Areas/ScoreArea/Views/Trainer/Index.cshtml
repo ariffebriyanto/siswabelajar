@@ -1,0 +1,177 @@
+﻿@model OneStopRecruitment.Areas.ScoreArea.ViewModels.Trainer.ScoreTrainerViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Score";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    decimal TotalScore = 0;
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div class="C--table-card type--1">
+        <div class="card__body">
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Name</b>
+                </div>
+                <div>
+                    @Model.Candidate.Name
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <b>NIM</b>
+                </div>
+                <div>
+                    @Model.Candidate.NIM
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <b>Position</b>
+                </div>
+                <div>
+                    @Model.Candidate.PositionName
+                </div>
+            </div>
+
+            @if (!Model.Candidate.SubmissionFilePath.Equals(""))
+            {
+                <div class="row">
+                    <div class="col-md-3">
+                        <b>Assignment Notes</b>
+                    </div>
+                    <div>
+                        @Model.Candidate.AssignmentNotes
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+@if (!Model.Candidate.SubmissionFilePath.Equals(""))
+{
+    <div class="row m-top-20 m-bottom-20">
+        <div class="col-md-6">
+            <a-encoded asp-area="ScoreArea" asp-controller="Trainer" asp-action="DownloadSubmission"
+                       asp-route-filePath="@Model.Candidate.SubmissionFilePath"
+                       class="C--button type--1 -theme-primary">
+                Download Submission
+            </a-encoded>
+        </div>
+    </div>
+}
+<div class="row m-top-20">
+    <div class="col-sm-12">
+        <div class="C--table-card type--1 mt-2">
+            <div class="card__head">
+                <h3 class="card__title">Score</h3>
+            </div>
+            <form id="form" asp-action="Index" asp-area="ScoreArea" asp-controller="Trainer" method="post"
+                  onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+
+                <input asp-for="@Model.Candidate.Name" hidden />
+                <input asp-for="@Model.Candidate.NIM" hidden />
+                <input asp-for="@Model.Candidate.PositionName" hidden />
+                <input asp-for="@Model.Candidate.AssignmentNotes" hidden />
+                <input asp-for="@Model.Candidate.SubmissionFilePath" hidden />
+
+                <div class="card__body">
+                    <div class="C--datatables type--1 -autoload">
+                        <table id="scoreTable" class="datatables ui celled table">
+                            <thead class="table-head">
+                                <tr>
+                                    <th style="width: 30%;">Component</th>
+                                    <th style="width: 20%;">Type</th>
+                                    <th style="width: 10%;">Range Score</th>
+                                    <th style="width: 15%;">Score</th>
+                                    <th style="width: 25%;">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < Model.QuestionList.Count(); i++)
+                                {
+                                    var item = Model.QuestionList.ElementAt(i);
+                                    TotalScore += Convert.ToInt32(item.MaxScore);
+                                    <tr>
+                                        <td style="width: 30%;">
+                                            @item.ScoringComponentText
+                                            <input asp-for="@Model.QuestionList[i].IDScoringComponent" hidden />
+                                            <input asp-for="@Model.QuestionList[i].ScoringComponentText" hidden />
+                                        </td>
+                                        <td style="width: 20%;">
+                                            @item.ScoringComponentType
+                                            <input asp-for="@Model.QuestionList[i].ScoringComponentType" hidden />
+                                        </td>
+                                        <td style="width: 10%;">
+                                            @Convert.ToInt32(item.MinScore) - @Convert.ToInt32(item.MaxScore)
+                                            <input asp-for="@Model.QuestionList[i].MinScore" hidden />
+                                            <input asp-for="@Model.QuestionList[i].MaxScore" hidden />
+                                        </td>
+                                        <td style="width: 15%;">
+                                            <input type="number" asp-for="@Model.QuestionList[i].Score" class="C--textbox type--1 txtScore" min="@item.MinScore" max="@item.MaxScore" placeholder="Score" />
+                                            <span asp-validation-for="@item.Score" class="text-error"></span>
+                                        </td>
+                                        <td style="width: 25%;" class="td-center">
+                                            <textarea asp-for="@Model.QuestionList[i].Notes" placeholder="Notes" class="C--textarea type--1" rows="2" cols="20"></textarea>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="m-left-20 m-bottom-20">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <b>Total Score</b> : <span id="spanScore"></span> / @TotalScore
+                        </div>
+                    </div>
+
+                    <div class="row m-top-20">
+                        <div class="col-md-12">
+                            <input asp-for="@Model.IDAssignment" hidden />
+                            <input asp-for="@Model.IDSchedule" hidden />
+                            <input asp-for="@Model.IDCandidate" hidden />
+                            <button type="submit" id="btnSubmit" class="button C--button type--1 -theme-primary">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+        </div>
+<script>
+    $(document).ready(function () {
+        $('#scoreTable').dataTable({
+            "order": []
+        });
+
+        calculateScore();
+
+        function calculateScore() {
+            let total = 0;
+            $('.txtScore').each(function () {
+                let score = parseInt($(this).val());
+                console.log(score);
+                if (isNaN(score)) score = 0;
+                total += score;
+            })
+            $('#spanScore').html(parseInt(total));
+        }
+
+        $('.txtScore').on('keyup', function () {
+            calculateScore();
+        })
+
+        $('#btnSubmit').click(function () {
+        })
+    })
+</script>

@@ -1,0 +1,45 @@
+﻿@model OneStopRecruitment.Areas.ModuleConfigurationArea.ViewModels.Staff.ModuleConfigurationResultViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Module Configuration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div class="C--combobox-card type--1">
+        <form class="M--form type--1" asp-area="ModuleConfigurationArea" asp-controller="Staff" asp-action="Index"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off">
+            <div class="card__body">
+                <div id="sectionDDLRole" class="form__field">
+                    <h3 class="card__title label">User Role</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlRole" asp-for="@Model.IDRole" asp-items="@Model.RoleList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Role</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="IDRole" class="text-error"></span>
+                </div>
+                <div class="text-right">
+                    <a asp-area="ModuleConfigurationArea" asp-controller="Staff" asp-action="InsertModule"
+                        onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+                        class="button C--button type--1 -theme-primary" method="GET" autocomplete="off">
+                        <i class="material-icons">add</i>
+                        Insert Module
+                    </a>
+                    <button class="button C--button type--1 -theme-primary">
+                        <i class="material-icons">search</i>
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<section class="section-divider">
+    @if (Model.IDRole != 0)
+    {
+        @await Component.InvokeAsync("SearchModule", new { IDRole = Model.IDRole })
+    }
+</section>

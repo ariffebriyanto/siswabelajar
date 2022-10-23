@@ -1,0 +1,91 @@
+﻿@model OneStopRecruitment.Areas.MasterPeriodArea.ViewModels.MasterPeriodViewModel
+@{
+    ViewData["Title"] = "Master Period";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<div class="C--table-card type--1 mt-2">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-9">
+                <h3 class="card__title">Periods</h3>
+            </div>
+            <div class="col-sm-3 text-right">
+                <form asp-action="InsertPeriod" asp-area="MasterPeriodArea" asp-controller="Staff" method="GET">
+                    <button class="button C--button type--1 -theme-primary">
+                        <i class="material-icons">add</i>
+                        Insert Period
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <form id="form-view-period">
+                <table class="datatables ui celled table">
+                    <thead class="table-head">
+                        <tr>
+                            <th class="set-table-width break-word sticky" style="--param-width: 50px;"></th>
+                            <th class="set-table-width break-word sticky" style="--param-width: 200px;">Period</th>
+                            <th class="set-table-width break-word sticky" style="--param-width: 150px;">Registration Start Date</th>
+                            <th class="set-table-width break-word sticky" style="--param-width: 150px;">Registration End Date</th>
+                            <th class="set-table-width break-word sticky" style="--param-width: 200px;">Stage</th>
+                            <th class="set-table-width break-word sticky" style="--param-width: 100px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.PeriodList.Count(); i++)
+                        {
+                            var item = Model.PeriodList.ElementAt(i);
+                            <tr>
+                                <td class="set-table-width break-word" style="--param-width: 50px;">
+                                    @if (item.IsActive == 1)
+                                    {
+                                        <input class="rbPeriod" type="radio" value="@item.IDPeriod" name="rbPeriod" checked />
+                                    }
+                                    else
+                                    {
+                                        <input class="rbPeriod" type="radio" value="@item.IDPeriod" name="rbPeriod" />
+                                    }
+                                </td>
+                                <td class="set-table-width break-word" style="--param-width: 200px;">@item.PeriodName</td>
+                                <td class="set-table-width break-word" style="--param-width: 150px;"><span style="display: none;">@item.DeadlineStart.ToString("yyyyMMdd")</span>@item.DeadlineStart.ToString("ddd, dd MMM yyyy")</td>
+                                <td class="set-table-width break-word" style="--param-width: 150px;"><span style="display: none;">@item.DeadlineEnd.ToString("yyyyMMdd")</span>@item.DeadlineEnd.ToString("ddd, dd MMM yyyy")</td>
+                                <td class="set-table-width break-word" style="--param-width: 200px;">@item.StageName</td>
+                                <td class="set-table-width break-word" style="--param-width: 100px;">
+                                    <a-encoded asp-route-periodID="@item.IDPeriod" asp-action="UpdatePeriod" asp-area="MasterPeriodArea" asp-controller="Staff" method="GET"
+                                       class="C--button button-type--2 -theme-primary -size--small material-icons editPeriod">
+                                        edit
+                                    </a-encoded>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('.rbPeriod').on('change', function () {
+        let selectedPeriod = $(this).val();
+
+        $.ajax({
+            'url': '@Url.Action("UpdateActivePeriod", "Staff")',
+            'method' : 'POST',
+            'data': {
+                selectedPeriod
+            },
+            success: function (result) {
+
+            },
+            error: function (error) {
+
+            }
+        })
+    })
+</script>

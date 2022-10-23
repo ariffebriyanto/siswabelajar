@@ -1,0 +1,67 @@
+﻿@model OneStopRecruitment.Areas.AssignmentArea.ViewModels.Staff.AssignmentResultViewModel
+@using Model.DBConstraint
+
+<div class="C--table-card type--1">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-8">
+                <h3 class="card__title">Assignments</h3>
+            </div>
+            @if (Model.IDAssignment != 0)
+            {
+                <div class="col-sm-4 text-right">
+                    <input class="hidden_moduleId" type="hidden" value="@Model.IDAssignment" />
+                    <a-encoded asp-area="AssignmentArea" asp-controller="Staff" asp-action="UpdateAssignment"
+                               asp-route-assignmentID="@Model.IDAssignment"
+                               class="button C--button type--1 -theme-primary"
+                               onclick="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+                        <i class="material-icons">edit</i>
+                        Update Assignment
+                    </a-encoded>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload">
+            <table id="tableAssignmentConfiguration" class="datatables ui celled table">
+                <thead class="table-head">
+                    <tr>
+                        <th class="set-table-width break-word sticky" style="width: 300px;">Schedule</th>
+                        <th class="set-table-width break-word sticky" style="width: 150px;">Room</th>
+                        <th class="set-table-width break-word sticky" style="width: 350px;">Submission Date</th>
+                        <th class="set-table-width break-word sticky" style="width: 250px;">Reviewer</th>
+                        <th class="set-table-width break-word sticky" style="width: 150px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.AssignmentScheduleList.Count(); i++)
+                    {
+                        var item = Model.AssignmentScheduleList.ElementAt(i);
+                        <tr>
+                            <td class="set-table-width break-word" style="width: 300px;"><span style="display: none;">@item.ScheduleDate.ToString("yyyyMMdd")@item.ScheduleStartTime.ToString("hhmm")@item.ScheduleEndTime.ToString("hhmm")</span>@item.ScheduleDate.ToString("ddd, dd MMM yyyy") (@item.ScheduleStartTime.ToString(@"hh\:mm") - @item.ScheduleEndTime.ToString(@"hh\:mm"))</td>
+                            <td class="set-table-width break-word" style="width: 150px;">@item.Room</td>
+                            <td class="set-table-width break-word" style="width: 350px;"><span style="display: none;">@item.DeadlineStartDate.ToString("yyyyMMdd")@item.DeadlineEndDate.ToString("yyyyMMdd")</span>@item.DeadlineStartDate.ToString("ddd, dd MMM yyyy") - @item.DeadlineEndDate.ToString("ddd, dd MMM yyyy")</td>
+                            <td class="set-table-width break-word" style="width: 250px;">@item.TrainerName</td>
+                            <td class="set-table-width break-word" style="width: 150px;">
+                                <a-encoded asp-area="AssignmentArea" asp-controller="Staff" asp-action="AssignmentDetails"
+                                           asp-route-assignmentID="@item.IDAssignment" asp-route-scheduleID="@item.IDSchedule"
+                                           class="C--button button-type--1 -theme-primary -size--small material-icons"
+                                           onclick="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+                                    visibility
+                                </a-encoded>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#tableAssignmentConfiguration').DataTable({
+
+        });
+    });
+</script>

@@ -1,0 +1,71 @@
+﻿@model OneStopRecruitment.Areas.MasterPeriodArea.ViewModels.MasterPeriodViewModel
+@using Model.DBConstraint
+@{
+    string Action;
+    if (Model.Period.IDPeriod == 0)
+    {
+        ViewData["Title"] = "Insert Period";
+        Action = "InsertPeriod";
+    }
+    else
+    {
+        ViewData["Title"] = "Update Period";
+        Action = "UpdatePeriod";
+    }
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var ErrorMessage = Convert.ToString(TempData["ErrorMessage"]) ?? "";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">
+    <form asp-action="@Action" asp-area="MasterPeriodArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Period Name -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <input asp-for="Period.IDPeriod" value="@Model.Period.IDPeriod" hidden />
+                        <input asp-for="Period.IDStage" value="@Model.Period.IDStage" hidden />
+                        <input asp-for="Period.IsComplete" value="@Model.Period.IsComplete" hidden />
+                        <label class="field__label">Period Name<span class="mandatory">*</span></label>
+                        <input asp-for="Period.PeriodName" type="text" class="C--textbox type--1" autocomplete="off" placeholder="Period Name">
+                        <span asp-validation-for="Period.PeriodName" class="text-error"></span>
+                    </div>
+                </div>
+
+                <!-- Deadline -->
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12">
+                        <label class="field__label">Registration Date<span class="mandatory">*</span></label>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom:20px;">
+                    <div class="col-md-6 pr-sm-3">
+                        <input asp-for="Period.DeadlineStart" id="start-date" type="text" class="C--textbox type--1 datepicker" value="@Model.Period.DeadlineStart.ToString("dd MMM yyyy")" placeholder="Start Date">
+                        <span asp-validation-for="Period.DeadlineStart" class="text-error"></span>
+                    </div>
+                    <div class="col-md-6 pr-sm-3">
+                        <input asp-for="Period.DeadlineEnd" id="end-date" type="text" class="C--textbox type--1" value="@Model.Period.DeadlineEnd.ToString("dd MMM yyyy")" placeholder="End Date">
+                        <span asp-validation-for="Period.DeadlineEnd" class="text-error"></span>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-md-12">
+                        <button class="button C--button type--1 -theme-primary">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+<script>
+    $('#start-date').datepicker({ format: 'dd M yyyy' });
+
+    $('#end-date').datepicker({ format: 'dd M yyyy' });
+</script>

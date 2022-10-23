@@ -1,0 +1,116 @@
+﻿@model OneStopRecruitment.Areas.MinimumScoreArea.ViewModels.MinimumScoreViewModel
+@{
+    ViewData["Title"] = "Minimum Score";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<div class="C--table-card type--1 mt-2">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-9">
+                <h3 class="card__title">Minimum Score</h3>
+            </div>
+            <div class="col-sm-3 text-right">
+                <form asp-action="InsertMinimumScore" asp-area="MinimumScoreArea" asp-controller="Staff" method="GET">
+                    <button class="button C--button type--1 -theme-primary">
+                        <i class="material-icons">add</i>
+                        Insert Score
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <form id="form-view-period">
+                <table class="datatables ui celled table">
+                    <thead class="table-head">
+                        <tr>
+                            <th style="width: 20%;">Period</th>
+                            <th style="width: 20%;">Stage</th>
+                            <th style="width: 20%;">Substage</th>
+                            <th style="width: 20%;">Minimum Score</th>
+                            <th style="width: 20%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.MinimumScoreList.Count(); i++)
+                        {
+                            var item = Model.MinimumScoreList.ElementAt(i);
+                        <tr>
+                            <td style="width: 20%;">@item.PeriodName</td>
+                            <td style="width: 20%;">@item.StageName</td>
+                            <td style="width: 20%;">@item.SubStageName</td>
+                            <td style="width: 20%;">@item.Score</td>
+                            <td style="width: 20%;">
+                                <a-encoded asp-route-minimumScoreID="@item.IDMinimumScore" asp-action="UpdateMinimumScore" asp-area="MinimumScoreArea" asp-controller="Staff" method="GET"
+                                           class="C--button button-type--2 -theme-primary -size--small material-icons editMinimumScore">
+                                    edit
+                                </a-encoded>
+                                <a id="@item.IDMinimumScore" class="C--button button-type--2 -theme-primary -size--small material-icons deleteMinimumScore">
+                                    delete
+                                </a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        function alertSuccess() {
+            Swal.fire({
+                icon: 'success',
+                title : 'Success',
+                text : 'Item has been deleted.'
+            }).then((result) => {
+                location.reload();
+            })
+        }
+
+        function alertError() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Please try again'
+            })
+        }
+
+        $('.deleteMinimumScore').on('click', function () {
+            let IDMinimumScore = this.id;
+            Swal.fire({
+                title: 'Are you sure want to delete this minimum score?',                
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Delete
+                    $.ajax({
+                        'url': '@Url.Action("DeleteMinimumScore", "Staff")',
+                        'method' : 'POST',
+                        'data': {
+                            IDMinimumScore
+                        },
+                        success: function (result) {
+                            if (result) {
+                                alertSuccess();
+                                return;
+                            }
+                            alertError();
+                        },
+                        error: function (error) {
+                            alertError();
+                        }
+                    })
+                }
+            })
+        })
+    })
+</script>

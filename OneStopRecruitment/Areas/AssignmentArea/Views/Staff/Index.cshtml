@@ -1,0 +1,115 @@
+﻿@model OneStopRecruitment.Areas.AssignmentArea.ViewModels.Staff.AssignmentResultViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="section-divider">
+    <div class="C--combobox-card type--1">
+        <form class="M--form type--1" asp-area="AssignmentArea" asp-controller="Staff" asp-action="Index"
+              onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+              method="POST" autocomplete="off">
+            <div class="card__body">
+                <div id="sectionDDLPeriod" class="form__field">
+                    <h3 class="card__title label">Period</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlPeriod" asp-for="@Model.IDPeriod" asp-items="@Model.PeriodList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Period</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="IDPeriod" class="text-error"></span>
+                </div>
+                <div id="sectionDDLStage" class="form__field">
+                    <h3 class="card__title label">Stage</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlStage" asp-for="@Model.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                            <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="IDStage" class="text-error"></span>
+                </div>
+                <input id="hidden_subStageId" type="hidden" asp-for="@Model.IDSubStage" />
+                <div id="sectionDDLSubStage" class="form__field display-none">
+                    <h3 class="card__title label">Substage</h3>
+                    <div class="C--combobox type--1 -autoload card__text">
+                        <select id="ddlSubStage" asp-for="@Model.IDSubStage" class="combobox__component">
+                        </select>
+                    </div>
+                    <span asp-validation-for="IDSubStage" class="text-error"></span>
+                </div>
+                <div class="text-right">
+                    <a asp-area="AssignmentArea" asp-controller="Staff" asp-action="InsertAssignment"
+                       onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')"
+                       method="GET" autocomplete="off"
+                       class="button C--button type--1 -theme-primary mr-1">
+                        <i class="material-icons">add</i>
+                        Insert Assignment
+                    </a>
+                    <button class="button C--button type--1 -theme-primary ml-1">
+                        <i class="material-icons">search</i>
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<section class="section-divider">
+    @if (Model.IDPeriod != 0 && Model.IDStage != 0 && Model.IDSubStage != 0)
+    {
+        @await Component.InvokeAsync("SearchAssignment", new { IDPeriod = Model.IDPeriod, IDStage = Model.IDStage, IDSubStage = Model.IDSubStage })
+    }
+</section>
+<script>
+    $(document).ready(function () {
+        $('#ddlStage').on('change', function () {
+            let IDStage = $(this).val();
+
+            if (IDStage != 0 && IDStage != null) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetSubStageDropdown", "Staff")',
+                    data: {
+                        stageID: IDStage
+                    },
+                    success: function (result) {
+                        if (result != null && result.length > 0) {
+                            $('#ddlSubStage').empty();
+                            $('#hidden_subStageId').val(null);
+                            $('#ddlSubStage').append(`<option value="" selected disabled hidden>@DropdownConstraint.SubStage</option>`);
+                            $('#ddlSubStage').siblings('.combobox__label').html('@DropdownConstraint.SubStage');
+                            result.forEach((row) => {
+                                if (row['value'] == @Model.IDSubStage) {
+                                    $('#ddlSubStage').val(row['value']);
+                                    $('#ddlSubStage').append(`<option selected="selected" value="${row['value']}">${row['text']}</option>`);
+                                    $('#ddlSubStage').siblings('.combobox__label').html(row['text']);
+                                } else {
+                                    $('#ddlSubStage').append(`<option value="${row['value']}">${row['text']}</option>`);
+                                }
+                            });
+                            $("#hidden_subStageId").prop("disabled", true);
+                            $('#hidden_subStageId').hide();
+                            $('#sectionDDLSubStage').show();
+                        }
+                        else {
+                            $("#hidden_subStageId").prop("disabled", false);
+                            $('#hidden_subStageId').show();
+                            $('#hidden_subStageId').val(-1);
+                            $('#sectionDDLSubStage').hide();
+                        }
+                    },
+                    error: function (result) {
+                        $("#hidden_subStageId").prop("disabled", false);
+                        $('#hidden_subStageId').show();
+                        $('#hidden_subStageId').val(0);
+                        $('#sectionDDLSubStage').hide();
+                    }
+                });
+            }
+        });
+
+        $('#ddlStage').trigger('change');
+    });
+</script>

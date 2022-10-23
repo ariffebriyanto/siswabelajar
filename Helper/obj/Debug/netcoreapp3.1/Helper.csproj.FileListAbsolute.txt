@@ -1,0 +1,10 @@
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\bin\Debug\netcoreapp3.1\Helper.deps.json
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\bin\Debug\netcoreapp3.1\Helper.dll
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\bin\Debug\netcoreapp3.1\Helper.pdb
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\obj\Debug\netcoreapp3.1\Helper.csproj.AssemblyReference.cache
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\obj\Debug\netcoreapp3.1\Helper.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\obj\Debug\netcoreapp3.1\Helper.AssemblyInfoInputs.cache
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\obj\Debug\netcoreapp3.1\Helper.AssemblyInfo.cs
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\obj\Debug\netcoreapp3.1\Helper.csproj.CoreCompileInputs.cache
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\obj\Debug\netcoreapp3.1\Helper.dll
+C:\Users\mirac\Documents\am\OneStopRecruitment--ITDiv-master\Helper\obj\Debug\netcoreapp3.1\Helper.pdb

@@ -1,0 +1,196 @@
+﻿@model OneStopRecruitment.Areas.MasterScoringComponentArea.ViewModels.Staff.MasterScoringComponentViewModel
+@using Model.DBConstraint;
+@{
+    string Action;
+    if (Model.ScoringComponent.IDScoringComponent.Equals(Guid.Empty))
+    {
+        Action = "InsertScoringComponent";
+        ViewData["Title"] = "Insert Scoring Component";
+    }
+    else
+    {
+        Action = "UpdateScoringComponent";
+        ViewData["Title"] = "Update Scoring Component";
+    }
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">
+    <form id="form" class="M--form type--1" asp-action="@Action" asp-area="MasterScoringComponentArea" asp-controller="Staff" method="post"
+          onsubmit="showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading')" autocomplete="off">
+        <input asp-for="ScoringComponent.IDScoringComponent" hidden />
+        <div class="form__field">
+            <label class="field__label">Period<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select id="ddlPeriod" asp-for="ScoringComponent.IDPeriod" asp-items="@Model.PeriodList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.Period</option>
+                </select>
+            </div>
+            <span asp-validation-for="ScoringComponent.IDPeriod" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Stage<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select id="ddlStage" asp-for="ScoringComponent.IDStage" asp-items="@Model.StageList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.Stage</option>
+                </select>
+            </div>
+            <span asp-validation-for="ScoringComponent.IDStage" class="text-error"></span>
+        </div>
+        <div id="section-substage" class="form__field">
+            <label class="field__label">Substage<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <input id="IDSubStage" asp-for="ScoringComponent.IDSubStage" hidden />
+                <select id="ddlSubStage" class="combobox__component">
+                </select>
+            </div>
+            <span asp-validation-for="ScoringComponent.IDSubStage" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Scoring Component Type<span class="mandatory">*</span></label>
+            <div class="C--combobox type--1 -autoload card__text">
+                <select asp-for="ScoringComponent.IDScoringComponentType" asp-items="@Model.ScoringComponentTypeList" class="combobox__component">
+                    <option value="" selected disabled hidden>@DropdownConstraint.ScoringComponentType</option>
+                </select>
+            </div>
+            <span asp-validation-for="ScoringComponent.IDScoringComponentType" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Position<span class="mandatory">*</span></label>
+            <input id="IDPosition" asp-for="ScoringComponent.IDPosition" hidden />
+            @{
+                var positionSplit = Helper.StringHelper.StringManipulation.SplitToList(Model.ScoringComponent.IDPosition ?? "", ";");
+            }
+            @foreach (var item in Model.PositionList)
+            {
+                if (positionSplit.Where(x => x.Equals(item.IDPosition)).FirstOrDefault() != null)
+                {
+                    <input type="checkbox" class="cbxPosition C--checkbox" value="@item.IDPosition" checked /> @item.PositionName
+                }
+                else
+                {
+                    <input type="checkbox" class="cbxPosition C--checkbox" value="@item.IDPosition" /> @item.PositionName
+                }
+                <br />
+            }
+            <span asp-validation-for="ScoringComponent.IDPosition" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <label class="field__label">Scoring Component<span class="mandatory">*</span></label>
+            <textarea asp-for="ScoringComponent.ScoringComponentText" rows="3" type="number" class="C--textarea type--1" autocomplete="off"></textarea>
+            <span asp-validation-for="ScoringComponent.ScoringComponentText" class="text-error"></span>
+        </div>
+        <div class="form__field">
+            <div class="row">
+                <div class="col-md-6 pr-sm-3">
+                    <label class="field__label">Min Score<span class="mandatory">*</span></label>
+                    <input asp-for="ScoringComponent.MinScore" type="number" class="C--textbox type--1" autocomplete="off" />
+                    <span asp-validation-for="ScoringComponent.MinScore" class="text-error"></span>
+                </div>
+                <div class="col-md-6 pl-sm-3">
+                    <label class="field__label">Max Score<span class="mandatory">*</span></label>
+                    <input asp-for="ScoringComponent.MaxScore" type="number" class="C--textbox type--1" autocomplete="off" />
+                    <span asp-validation-for="ScoringComponent.MaxScore" class="text-error"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form__field">
+            <span asp-validation-for="ScoringComponent.IDScoringComponent" class="text-error"></span>
+        </div>
+        <div class="form__action">
+            <button id="btnSave" class="button C--button type--1 -theme-primary">Submit</button>
+        </div>
+    </form>
+</section>
+
+<script>
+    $(document).ready(function () {
+        init();
+
+        $('.cbxPosition').on('click', function () {
+            updateCheckedPosition();
+        })
+
+        $('#btnSave').click(function (e) {
+            e.preventDefault();
+            $('#IDSubStage').val($('#ddlSubStage').val() == null ? 0 : $('#ddlSubStage').val());
+            $('#form').submit();
+        })
+
+        $('#ddlStage').on('change', function () {
+            let IDStage = $(this).val();
+            $('#section-substage').hide();
+
+            loadSubStage(IDStage);
+        });
+
+        function init() {
+            $('#section-substage').hide();
+            $('#IDSubStage').val(@Model.ScoringComponent.IDSubStage)
+            updateCheckedPosition();
+            loadSubStage(@Model.ScoringComponent.IDStage, @Model.ScoringComponent.IDSubStage);            
+        }
+
+        function updateCheckedPosition() {
+            let value = ''
+            $('.cbxPosition').each(function (idx) {
+                if ($(this).is(':checked')) {
+                    value += `${$(this).val()};`
+                }
+            })
+            $('#IDPosition').val(value);
+        }
+
+        function loadSubStage(IDStage, IDSubStage = 0) {
+            if (IDStage != 0) {
+                showAlert('@BaseConstraint.NotificationType.Loading', '@AlertConstraint.Default.Loading');
+                $.ajax({
+                    method: 'post',
+                    url: '@Url.Action("GetSubStageList", "Staff")',
+                    data: { IDStage },
+                    success: function (result) {
+                        $('#loadingMessage').modal('hide');
+
+                        if (result != null && result.length > 0) {
+                            let temp = '';
+                            $('#ddlSubStage').html('');
+
+                            if (IDSubStage == 0) {
+                                temp += `<option value="0" selected disabled hidden>@DropdownConstraint.SubStage</option>`
+                                $('#ddlSubStage').siblings('.combobox__label').html('@DropdownConstraint.SubStage')
+                            }
+
+
+                            result.forEach((e) => {
+                                if (IDSubStage != 0 && e.idSubStage == IDSubStage) {
+                                    temp += `
+                                        <option selected value="${e.idSubStage}">${e.subStageName}</option>
+                                    `
+                                    $('#ddlSubStage').siblings('.combobox__label').html(e.subStageName)
+                                }
+                                else {
+                                    temp += `
+                                        <option value="${e.idSubStage}">${e.subStageName}</option>
+                                    `
+                                }
+                            });
+
+                            $('#ddlSubStage').val(0);
+                            $('#ddlSubStage').html(temp);
+                            $('#section-substage').show();
+                        }
+                        else {
+                            $('#ddlSubStage').val(0);
+                        }
+                    },
+                    error: function (error) {
+                        $('#loadingMessage').modal('hide');
+                        $('#ddlSubStage').val(0);
+                    }
+                })
+            }
+        }
+    });
+</script>

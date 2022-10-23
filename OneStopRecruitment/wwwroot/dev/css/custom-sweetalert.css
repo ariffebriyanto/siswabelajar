@@ -1,0 +1,85 @@
+﻿.swal2-popup {
+    width: 50em;
+    max-width: 100%;
+    border-radius: 6px;
+}
+
+.swal2-icon {
+    width: 8em;
+    height: 8em;
+}
+
+    .swal2-icon .swal2-icon-content {
+        font-size: 5em;
+    }
+
+.swal2-title {
+    color: var(--black-color);
+    font-size: 2.5em;
+    margin: 0 0 .2em;
+}
+
+.swal2-content {
+    font-size: 2em;
+}
+
+.swal2-actions {
+    margin: 2em auto 0;
+}
+
+.swal2-styled.swal2-confirm {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--white-color);
+    line-height: 1.75;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: var(--dark-red);
+    background-image: linear-gradient(0deg, var(--dark-red) 0, var(--light-red) 100%);
+    border-radius: 6px;
+}
+
+    .swal2-styled.swal2-confirm:hover {
+        background-color: var(--dark-red);
+        background-image: none;
+    }
+
+.swal2-styled.swal2-deny {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--white-color);
+    line-height: 1.75;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: var(--dark-purple);
+    background-image: linear-gradient(0deg, var(--dark-purple) 0, var(--light-purple) 100%);
+    border-radius: 6px;
+}
+
+    .swal2-styled.swal2-deny:hover {
+        background-color: var(--dark-purple);
+        background-image: none;
+    }
+
+.swal2-styled.swal2-cancel {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--white-color);
+    line-height: 1.75;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: var(--dark-purple);
+    background-image: linear-gradient(0deg, var(--dark-purple) 0, var(--light-purple) 100%);
+    border-radius: 6px;
+}
+
+    .swal2-styled.swal2-cancel:hover {
+        background-color: var(--dark-purple);
+        background-image: none;
+    }

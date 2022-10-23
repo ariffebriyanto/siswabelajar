@@ -1,0 +1,40 @@
+﻿@model OneStopRecruitment.Areas.DashboardArea.ViewModels.Staff.DashboardAssignmentQuestionViewModel
+@using Model.DBConstraint
+@{
+    ViewData["Title"] = "Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<section class="form-area">    
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="row" style="margin-bottom:20px;">
+                <div class="col-md-12">
+                    <label class="field__label"><b>Submit Period</b></label>
+                    <br />
+                    <label class="field__label">@Model.Assignment.DeadlineStartDate.ToString("ddd, dd MMM yyyy") - @Model.Assignment.DeadlineEndDate.ToString("ddd, dd MMM yyyy")</label>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:20px;">
+                <div class="col-md-12">
+                    <label class="field__label"><b>Notes From Trainer</b></label>
+                    <br />
+                    <span>@Html.Raw(Model.Assignment.Notes)</span>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:20px;">
+                <div class="col-md-12">
+                    <a-encoded asp-area="AssignmentArea" asp-controller="Candidate" asp-action="DownloadQuestion"
+                               asp-route-filePath="@Model.Assignment.AssignmentFileName"
+                               class="C--button type--1 -theme-primary">
+                        Download Question
+                    </a-encoded>                    
+                </div>
+            </div>
+        </div>
+    </div>    
+</section>

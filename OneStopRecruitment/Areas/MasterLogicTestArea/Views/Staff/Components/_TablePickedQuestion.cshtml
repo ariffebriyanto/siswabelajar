@@ -1,0 +1,143 @@
+﻿@model OneStopRecruitment.Areas.MasterLogicTestArea.ViewModels.Staff.MasterLogicTestViewModel
+@{ 
+    var total = Model.TotalPickedQuestion;
+}
+
+<div class="C--table-card type--1">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-9">
+                <h3 id="total-picks" class="card__title"></h3>
+            </div>            
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <table class="datatables ui celled table">
+                <thead class="table-head">
+                    <tr>
+                        <th style="width: 5%;"></th>
+                        <th style="width: 25%;">Question</th>
+                        <th style="width: 10%;">Type</th>
+                        <th style="width: 15%;">A</th>
+                        <th style="width: 15%;">B</th>
+                        <th style="width: 15%;">C</th>
+                        <th style="width: 15%;">D</th>                        
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.MasterLogicTestQuestionList.Count(); i++)
+                    {
+                        var item = Model.MasterLogicTestQuestionList.ElementAt(i);
+                        <tr>
+                            <td style="width: 5%;">
+                                <input class="IDPeriod" value="@Model.IDPeriod" hidden />
+                                <input class="IDLogicTestQuestion" value="@item.IDLogicTestQuestion.ToString()" hidden />
+                                @if (item.IsPicked)
+                                {
+                                    <input type="checkbox" class="cbxPick" checked />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="cbxPick" />
+                                }
+                            </td>
+                            <td style="width: 25%;">
+                                @if (!String.IsNullOrEmpty(item.QuestionText))
+                                {
+                                    <span>@item.QuestionText</span>
+                                }
+                                else
+                                {
+                                    <img src="@item.QuestionImage" />
+                                }
+                            </td>
+                            <td style="width: 10%;">@item.QuestionType</td>
+                            <td style="width: 15%;">
+                                @if (!String.IsNullOrEmpty(item.FirstChoiceText))
+                                {
+                                    <span>@item.FirstChoiceText</span>
+                                }
+                                else
+                                {
+                                    <img src="@item.FirstChoiceImage" />
+                                }
+                            </td>
+                            <td style="width: 15%;">
+                                @if (!String.IsNullOrEmpty(item.SecondChoiceText))
+                                {
+                                    <span>@item.SecondChoiceText</span>
+                                }
+                                else
+                                {
+                                    <img src="@item.SecondChoiceImage" />
+                                }
+                            </td>
+                            <td style="width: 15%;">
+                                @if (!String.IsNullOrEmpty(item.ThirdChoiceText))
+                                {
+                                    <span>@item.ThirdChoiceText</span>
+                                }
+                                else
+                                {
+                                    <img src="@item.ThirdChoiceImage" />
+                                }
+                            </td>
+                            <td style="width: 15%;">
+                                @if (!String.IsNullOrEmpty(item.FourthChoiceText))
+                                {
+                                    <span>@item.FourthChoiceText</span>
+                                }
+                                else
+                                {
+                                    <img src="@item.FourthChoiceImage" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    let total = @total;
+    setTotalPicks();
+
+    function setTotalPicks() {
+        $('#total-picks').html(`Total Picks : ${total}`)
+    }
+
+    $('.cbxPick').on('click', function () {
+        let IsChecked = $(this).is(':checked');
+        let IDLogicTestQuestion = $(this).siblings('.IDLogicTestQuestion').val();
+        let IDPeriod = $(this).siblings('.IDPeriod').val();
+        let cbx = $(this)
+
+        $.ajax({
+            'url': '@Url.Action("QuestionChecked", "Staff")',
+            'method' : 'POST',
+            'data': {
+                IsChecked, IDLogicTestQuestion, IDPeriod
+            },
+            success: function (result) {
+                if (result) {
+                    if (IsChecked) {                        
+                        total++;
+                    }
+                    else {
+                        total--;
+                    }
+                    setTotalPicks()
+                }
+                else {
+                    cbx.prop('checked', !IsChecked)
+                }
+            },
+            error: function (error) {
+                cbx.prop('checked', !IsChecked)
+            }
+        })
+    })
+</script>

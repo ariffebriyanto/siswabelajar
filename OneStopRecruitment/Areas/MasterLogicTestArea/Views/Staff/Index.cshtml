@@ -1,0 +1,178 @@
+﻿@model OneStopRecruitment.Areas.MasterLogicTestArea.ViewModels.Staff.MasterLogicTestViewModel
+@{
+    ViewData["Title"] = "Master Logic Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@await Component.InvokeAsync("Breadcrumb")
+<div class="C--table-card type--1 mt-2">
+    <div class="card__head">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3 class="card__title">Logic Test Question</h3>
+            </div>
+            <div class="col-sm-8 text-right">
+                <a asp-action="InsertQuestionType" asp-area="MasterLogicTestArea" asp-controller="Staff" method="GET"
+                    class="button C--button type--1 -theme-primary mr-1">
+                    <i class="material-icons">add</i>
+                    Insert Question Type
+                </a>
+                <a asp-action="InsertQuestion" asp-area="MasterLogicTestArea" asp-controller="Staff" method="GET"
+                    class="button C--button type--1 -theme-primary mx-1">
+                    <i class="material-icons">add</i>
+                    Insert Question
+                </a>
+                <a asp-action="ViewPickQuestion" asp-area="MasterLogicTestArea" asp-controller="Staff" method="POST"
+                    class="button C--button type--1 -theme-primary ml-1">
+                    <i class="material-icons">colorize</i>
+                    Pick Question
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="C--datatables type--1 -autoload overflow">
+            <form id="form-view-period">
+                <table class="datatables ui celled table">
+                    <thead class="table-head">
+                        <tr>
+                            <th style="width: 14%;">Question</th>
+                            <th style="width: 14%;">Type</th>
+                            <th style="width: 8%;">Answer</th>
+                            <th style="width: 14%;">A</th>
+                            <th style="width: 14%;">B</th>
+                            <th style="width: 14%;">C</th>
+                            <th style="width: 14%;">D</th>
+                            <th style="width: 8%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.MasterLogicTestQuestionList.Count(); i++)
+                        {
+                            var item = Model.MasterLogicTestQuestionList.ElementAt(i);
+
+                            <tr>
+                                <td style="width: 14%;">
+                                    @if (!String.IsNullOrEmpty(item.QuestionText))
+                                    {
+                                        <span>@item.QuestionText</span>
+                                    }
+                                    else
+                                    {
+                                        <img src="@item.QuestionImage" />
+                                    }
+                                </td>
+                                <td style="width: 14%;">@item.QuestionType</td>
+                                <td style="width: 8%;">@item.CorrectChoice</td>
+                                <td style="width: 14%;">
+                                    @if (!String.IsNullOrEmpty(item.FirstChoiceText))
+                                    {
+                                        <span>@item.FirstChoiceText</span>
+                                    }
+                                    else
+                                    {
+                                        <img src="@item.FirstChoiceImage" />
+                                    }
+                                </td>
+                                <td style="width: 14%;">
+                                    @if (!String.IsNullOrEmpty(item.SecondChoiceText))
+                                    {
+                                        <span>@item.SecondChoiceText</span>
+                                    }
+                                    else
+                                    {
+                                        <img src="@item.SecondChoiceImage" />
+                                    }
+                                </td>
+                                <td style="width: 14%;">
+                                    @if (!String.IsNullOrEmpty(item.ThirdChoiceText))
+                                    {
+                                        <span>@item.ThirdChoiceText</span>
+                                    }
+                                    else
+                                    {
+                                        <img src="@item.ThirdChoiceImage" />
+                                    }
+                                </td>
+                                <td style="width: 14%;">
+                                    @if (!String.IsNullOrEmpty(item.FourthChoiceText))
+                                    {
+                                        <span>@item.FourthChoiceText</span>
+                                    }
+                                    else
+                                    {
+                                        <img src="@item.FourthChoiceImage" />
+                                    }
+                                </td>
+                                <td style="width: 8%;">
+                                    <a-encoded asp-route-logicTestQuestionID="@item.IDLogicTestQuestion" asp-action="UpdateQuestion" asp-area="MasterLogicTestArea" asp-controller="Staff" method="GET"
+                                       class="C--button button-type--2 -theme-primary -size--small material-icons editQuestion">
+                                        edit
+                                    </a-encoded>
+                                    <a id="@item.IDLogicTestQuestion" class="C--button button-type--2 -theme-primary -size--small material-icons deleteQuestion" style="color: #783292; cursor:pointer;">
+                                        delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        function alertSuccess() {
+            Swal.fire({
+                icon: 'success',
+                title : 'Success',
+                text : 'Your question has been deleted.'
+            }).then((result) => {
+                location.reload();
+            })
+        }
+
+        function alertError() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Please try again'
+            })
+        }
+
+        $('.deleteQuestion').on('click', function () {
+            let IDLogicTestQuestion = this.id;
+            Swal.fire({
+                title: 'Are you sure want to delete this question?',
+                text: "It will affect the number of your picked question in certain period",
+                icon: 'warning',
+                showCancelButton: true,                
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Delete                                        
+                    $.ajax({
+                        'url': '@Url.Action("DeleteQuestion", "Staff")',
+                        'method' : 'POST',
+                        'data': {
+                            IDLogicTestQuestion
+                        },
+                        success: function (result) {                            
+                            if (result) {
+                                alertSuccess();
+                                return;
+                            }
+                            alertError();
+                        },
+                        error: function (error) {
+                            alertError();
+                        }
+                    })
+                }
+            })
+        })
+    })
+</script>
