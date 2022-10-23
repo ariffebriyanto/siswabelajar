@@ -16,6 +16,7 @@ using Repository.Context;
 using Repository.Repositories.OneStopRecruitmentRepository;
 using Repository.Repositories.OracleRepository;
 using Service.Helpers.EmailHelper;
+using Service.Modules;
 using System;
 using System.IO;
 
@@ -130,6 +131,22 @@ namespace OneStopRecruitment
 
             // SMTP
             services.AddSingleton<IEmailHelper, EmailHelper>();
+
+
+            ////start arif
+            services.AddControllers();
+
+            //services.AddScoped<IMyScopedService, MyScopedService>();
+
+            //services.AddCronJob<MyCronJob1>(c =>
+            //{
+            //    c.TimeZoneInfo = TimeZoneInfo.Local;
+            //    c.CronExpression = @"* * * * *";
+
+            //});
+
+
+            ///// end arif
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

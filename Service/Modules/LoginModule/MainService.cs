@@ -1,6 +1,7 @@
 ﻿using Helper;
 using Model.DTO.OneStopRecruitmentDTO;
 using Model.Subdomains.LoginSubdomain;
+using Model.Subdomains.EmailSubdomain;
 using Repository.Repositories.OneStopRecruitmentRepository;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,15 @@ namespace Service.Modules.LoginModule
     public interface IMainService
     {
         bool GetUserAvailability(string UserInput);
-        User GetUserLogin(string UserInput, string Password);
+        Model.Subdomains.LoginSubdomain.User GetUserLogin(string UserInput, string Password);
         bool IsOpenRegistration();
         bool IsActiveCandidate(string Username);
+
+        //arif
+
+        List<Model.Subdomains.EmailSubdomain.User> GetActiveUser();
+
+        //end arif
     }
     public class MainService : IMainService
     {
@@ -47,7 +54,7 @@ namespace Service.Modules.LoginModule
             return true;
         }
 
-        public User GetUserLogin(string UserInput, string Password)
+        public Model.Subdomains.LoginSubdomain.User GetUserLogin(string UserInput, string Password)
         {
             UserDTO userDTO = userRepository.GetUserByUserInput(UserInput);
 
@@ -57,7 +64,7 @@ namespace Service.Modules.LoginModule
                 userDTO = userRepository.GetUserByUserInput("Dita");
                 RoleDTO role = roleRepository.GetRoleById(userDTO.IDRole);
 
-                return new User()
+                return new Model.Subdomains.LoginSubdomain.User()
                 {
                     IDUser = userDTO.IDUser,
                     Name = userDTO.Name,
@@ -85,7 +92,7 @@ namespace Service.Modules.LoginModule
                 return null;
             }
 
-            return new User()
+            return new Model.Subdomains.LoginSubdomain.User()
             {
                 IDUser = userDTO.IDUser,
                 Name = userDTO.Name,
@@ -130,5 +137,38 @@ namespace Service.Modules.LoginModule
                 return false;
             }
         }
+
+        
+        public List<Model.Subdomains.EmailSubdomain.User> GetActiveUser()
+        {
+                List<Model.Subdomains.EmailSubdomain.User> result = new List<Model.Subdomains.EmailSubdomain.User>();
+                List<Model.Subdomains.EmailSubdomain.User> UserDTOs = userRepository.GetUserProfileForBlastEmail().ToList();
+                result = UserDTOs;
+            foreach(var item2 in UserDTOs)
+
+            {
+                Model.Subdomains.EmailSubdomain.User useremail = new Model.Subdomains.EmailSubdomain.User()
+                {
+                    RoleName = item2.RoleName,
+                    IDRole = item2.IDRole,
+                    Email= item2.Email,
+                    Name = item2.Name,
+                    Username = item2.Username,
+                    IDUser = item2.IDUser
+                   
+                    
+
+                };
+
+
+                result.Add(useremail);
+
+            }
+                return result;
+           
+          
+        }
+
+       
     }
 }

@@ -12,5 +12,6 @@ namespace OneStopRecruitment.Areas.DashboardArea.ViewModels.Candidate
         public List<BlastEmail> BlastEmailList { get; set; }        
         public MasterSchedule LogicTestSchedule { get; set; }
         public List<ToDo> ToDoList { get; set; }
+
     }
 }

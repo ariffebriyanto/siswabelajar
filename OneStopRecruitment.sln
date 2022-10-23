@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneStopRecruitment", "OneStopRecruitment\OneStopRecruitment.csproj", "{FAF62A32-B498-40BB-A57A-548FDCF769A6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A8A5F49-6DA2-4505-9F95-9A904B088E98} = {3A8A5F49-6DA2-4505-9F95-9A904B088E98}
+		{00E1BECA-6953-4500-B8DB-1678F858C6BF} = {00E1BECA-6953-4500-B8DB-1678F858C6BF}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helper", "Helper\Helper.csproj", "{3A8A5F49-6DA2-4505-9F95-9A904B088E98}"
 EndProject
@@ -12,8 +16,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{5D0A2587-9AEC-4F27-8434-AE73D3E89500}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{801D3944-A71B-4019-B2C0-CCC86FF9AC2E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchedulerWorker", "SchedulerWorker\SchedulerWorker.csproj", "{4AD76FE1-B851-445A-AF43-CDA1423BD114}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +43,6 @@ Global
 		{801D3944-A71B-4019-B2C0-CCC86FF9AC2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{801D3944-A71B-4019-B2C0-CCC86FF9AC2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{801D3944-A71B-4019-B2C0-CCC86FF9AC2E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4AD76FE1-B851-445A-AF43-CDA1423BD114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AD76FE1-B851-445A-AF43-CDA1423BD114}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AD76FE1-B851-445A-AF43-CDA1423BD114}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4AD76FE1-B851-445A-AF43-CDA1423BD114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
