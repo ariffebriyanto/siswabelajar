@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Service.Modules.LoginModule;
 using OneStopRecruitment.Areas.DashboardArea.ViewModels.Candidate;
+using System.Linq;
 
 //---------------------------------------//
 //Nama author: arif
@@ -137,13 +138,13 @@ namespace Service.Modules
                             DateTime.Now.TimeOfDay.CompareTo(item.StartTime) >= 0 &&
                             DateTime.Now.TimeOfDay.CompareTo(item.EndTime) <= 0)
                         {
-                            // viewModel.LogicTestSchedule = item;
+                            viewModel.LogicTestSchedule = item;
                             break;
                         }
                     }
 
 
-
+                    
                     DateTime hariini = DateTime.Now.Date;
 
                     if (viewModel.ToDoList.Count > 0)
@@ -152,8 +153,25 @@ namespace Service.Modules
 
                         foreach (var item in viewModel.ToDoList)
                         {
+                            var item1 = viewModel.ToDoList;
+
+                               
+
                             if (item.ScheduleorAssignment == "Schedule") /// to scheduler scedhule list
                             {
+                                var result = item1.Where(y => y.StageName == item.StageName && y.SubStageName == item.SubStageName);
+                                
+                                    if (result != null)
+                                {
+                                    DateTime? hariterkahir = result.Max(x => x.Date);
+                                    if (hariterkahir.HasValue)
+                                    {
+                                        hariterkahir = hariterkahir.Value.Date;
+                                        DateTime satuhari = hariterkahir.Value.Date.AddDays(-1);
+                                    }
+                                }
+                                    
+
                                 DateTime tujuhago = item.Date.AddDays(-7);
                                 if (tujuhago > hariini && tujuhago == hariini)
                                 {
