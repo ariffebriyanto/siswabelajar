@@ -17,6 +17,7 @@ namespace Repository.Repositories.OneStopRecruitmentRepository
         IEnumerable<UserDTO> GetUserByUsernameList(List<string> UsernameList);
         UserDTO GetUserByUserInput(string UserInput);
         IEnumerable<UserDTO> GetUserByUserIDList(List<Guid> IDUserList);
+        IEnumerable<UserDTO> GetUserCandidateList(List<string> Nim, int IDRole);
         List<User> GetUserProfileForBlastEmail();
     }
 
@@ -70,6 +71,15 @@ namespace Repository.Repositories.OneStopRecruitmentRepository
                 .Where(x => !x.StsRc.Equals(BaseConstraint.StsRc.Delete) &&
                             !x.StsRc.Equals(BaseConstraint.StsRc.Inactive) &&
                             IDUserList.Contains(x.IDUser)
+                );
+        }
+
+        public IEnumerable<UserDTO> GetUserCandidateList(List<string> Nim, int IDRole)
+        {
+            return Context.userDTOs
+                .Where(x => !x.StsRc.Equals(BaseConstraint.StsRc.Delete) &&
+                            !x.StsRc.Equals(BaseConstraint.StsRc.Inactive) &&
+                            Nim.Contains(x.Username) && x.IDRole == IDRole
                 );
         }
 

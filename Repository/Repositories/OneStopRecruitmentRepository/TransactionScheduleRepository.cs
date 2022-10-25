@@ -14,6 +14,7 @@ namespace Repository.Repositories.OneStopRecruitmentRepository
         IEnumerable<TransactionScheduleDTO> GetByIDUser(Guid IDUser);
         IEnumerable<TransactionScheduleDTO> GetByIDScheduleList(List<Guid> IDScheduleList);
         TransactionScheduleDTO GetByScheduleAndUser(Guid IDSchedule, Guid IDUser);
+        List<TransactionScheduleDTO> GetByScheduleAndUsers(Guid IDSchedule, List<Guid> IDUsers);
         int GetScheduleStudentCountById(Guid IDSchedule);
     }
     public class TransactionScheduleRepository : BaseRepository<TransactionScheduleDTO>, ITransactionScheduleRepository
@@ -54,6 +55,14 @@ namespace Repository.Repositories.OneStopRecruitmentRepository
                                !x.StsRc.Equals(BaseConstraint.StsRc.Inactive) &&
                                x.IDSchedule.Equals(IDSchedule) &&
                                x.IDUser.Equals(IDUser)).FirstOrDefault();
+        }
+        public List<TransactionScheduleDTO> GetByScheduleAndUsers(Guid IDSchedule, List<Guid> IDUsers)
+        {
+            return Context.transactionScheduleDTOs
+                   .Where(x => !x.StsRc.Equals(BaseConstraint.StsRc.Delete) &&
+                               !x.StsRc.Equals(BaseConstraint.StsRc.Inactive) &&
+                               x.IDSchedule.Equals(IDSchedule) &&
+                               IDUsers.Contains(x.IDUser)).ToList();
         }
 
         public int GetScheduleStudentCountById(Guid IDSchedule)

@@ -132,7 +132,6 @@ namespace OneStopRecruitment
             // SMTP
             services.AddSingleton<IEmailHelper, EmailHelper>();
 
-
             ////start arif
             services.AddControllers();
 
@@ -142,7 +141,11 @@ namespace OneStopRecruitment
             {
                 c.TimeZoneInfo = TimeZoneInfo.Local;
                 c.CronExpression = @"* * * * *";
-
+            });
+            services.AddCronJob<CandidateMailJob>(c =>
+            {
+                c.TimeZoneInfo = TimeZoneInfo.Local;
+                c.CronExpression = @"1 0 * * *";
             });
 
 
