@@ -57,6 +57,14 @@ namespace Service.Modules
 
             foreach (var item in scheduleDTOs)
             {
+                /* Checking Schedule (Start of Group Schedule?) */
+                var startGroupScheduleDate = _masterScheduleRepository.GetScheduleByPeriodStageSubStage(item.IDPeriod, item.IDStage, item.IDSubStage)
+                    .OrderBy(i => i.ScheduleDate)
+                    .Select(i => i.ScheduleDate.Date)
+                    .FirstOrDefault();
+                if (item.Date.Date != startGroupScheduleDate.Date)
+                    continue;
+
                 /* Get Candidates */
                 var candidates = new List<CandidateDTO>();
                 var idPositions = item.IDPosition.Split(';').ToArray();
