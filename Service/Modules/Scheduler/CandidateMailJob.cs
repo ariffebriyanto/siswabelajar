@@ -58,7 +58,8 @@ namespace Service.Modules
             var period = _periodRepository.GetActivePeriod();
             var scheduleDTOs = _masterScheduleRepository.GetScheduleByPeriod(period.IDPeriod)
                 .Where(i => i.Date.Date.CompareTo(currentDate.Date) == 7)
-                .OrderBy(x => x.Date).ThenBy(x => x.StartTime)
+                .Select(i => new { i.IDSchedule, i.IDPeriod, i.IDStage, i.IDSubStage, i.IDPosition, i.Date })
+                .Distinct()
                 .ToList();
 
             foreach (var item in scheduleDTOs)
@@ -95,8 +96,9 @@ namespace Service.Modules
 
             /* Scheduler for MsSchedule with Active Period (1 days) */
             scheduleDTOs = _masterScheduleRepository.GetScheduleByPeriod(period.IDPeriod)
-                .Where(i => i.Date.Date.CompareTo(currentDate.Date) == 0)
-                .OrderBy(x => x.Date).ThenBy(x => x.StartTime)
+                .Where(i => i.Date.Date.CompareTo(currentDate.Date) == 1)
+                .Select(i => new { i.IDSchedule, i.IDPeriod, i.IDStage, i.IDSubStage, i.IDPosition, i.Date })
+                .Distinct()
                 .ToList();
 
             foreach (var item in scheduleDTOs)
@@ -138,14 +140,15 @@ namespace Service.Modules
 
             foreach (var item in assignmentDTOs)
             {
-                var schedulePosition = _masterScheduleRepository.GetScheduleByPeriod(period != null ? period.IDPeriod : 0)
+                var schedule = _masterScheduleRepository.GetScheduleByPeriod(period != null ? period.IDPeriod : 0)
                     .Where(i => i.IDStage == item.IDStage && i.IDSubStage == item.IDSubStage)
-                    .Select(i => i.IDPosition)
+                    .Select(i => new { i.IDSchedule, i.IDPeriod, i.IDStage, i.IDSubStage, i.IDPosition, i.Date })
+                    .Distinct()
                     .FirstOrDefault();
 
                 /* Get Candidates */
                 var candidates = new List<CandidateDTO>();
-                var idPositions = schedulePosition.Split(';').ToArray();
+                var idPositions = schedule.IDPosition.Split(';').ToArray();
                 foreach (var position in idPositions)
                     candidates.AddRange(_candidateRepository.GetCandidateByStage(item.IDPeriod, item.IDStage, position).ToList());
 
