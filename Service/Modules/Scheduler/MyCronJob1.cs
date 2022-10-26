@@ -8,7 +8,6 @@ using Service.Modules.DashboardModule;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Service.Modules.LoginModule;
-using OneStopRecruitment.Areas.DashboardArea.ViewModels.Candidate;
 using System.Linq;
 
 //---------------------------------------//

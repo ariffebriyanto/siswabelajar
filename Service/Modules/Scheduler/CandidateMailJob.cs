@@ -49,12 +49,15 @@ namespace Service.Modules
 
         public override async Task DoWork(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("{now} ScheduleEmailJob is working.", DateTime.Now.ToString("T"));
+
+            var currentDate = DateTime.Now;
+
+            _logger.LogInformation("{now} ScheduleEmailJob is working.", currentDate.ToString("T"));
 
             /* Scheduler for MsSchedule with Active Period (7 days) */
             var period = _periodRepository.GetActivePeriod();
             var scheduleDTOs = _masterScheduleRepository.GetScheduleByPeriod(period.IDPeriod)
-                .Where(i => i.Date.Date.CompareTo(DateTime.Now.Date) == 7)
+                .Where(i => i.Date.Date.CompareTo(currentDate.Date) == 7)
                 .OrderBy(x => x.Date).ThenBy(x => x.StartTime)
                 .ToList();
 
@@ -92,7 +95,7 @@ namespace Service.Modules
 
             /* Scheduler for MsSchedule with Active Period (1 days) */
             scheduleDTOs = _masterScheduleRepository.GetScheduleByPeriod(period.IDPeriod)
-                .Where(i => i.Date.Date.CompareTo(DateTime.Now.Date) == 0)
+                .Where(i => i.Date.Date.CompareTo(currentDate.Date) == 0)
                 .OrderBy(x => x.Date).ThenBy(x => x.StartTime)
                 .ToList();
 
@@ -130,7 +133,7 @@ namespace Service.Modules
 
             /* Assignment on Deadline Start & Deadline End */
             var assignmentDTOs = _assignmentRepository.GetAssignmentByIdPeriod(period != null ? period.IDPeriod : 0)
-                .Where(i => i.DeadlineStart.Date == DateTime.Now.Date || i.DeadlineEnd == DateTime.Now.Date)
+                .Where(i => i.DeadlineStart.Date == currentDate.Date || i.DeadlineEnd == currentDate.Date)
                 .ToList();
 
             foreach (var item in assignmentDTOs)

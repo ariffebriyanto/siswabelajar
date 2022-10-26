@@ -129,6 +129,8 @@ namespace OneStopRecruitment
             services.AddTransient<Service.Modules.AssignmentModule.ITrainerService, Service.Modules.AssignmentModule.TrainerService>();
             services.AddTransient<Service.Modules.ScoreModule.ITrainerService, Service.Modules.ScoreModule.TrainerService>();
 
+            services.AddTransient<Service.Modules.CandidateMailJob, CandidateMailJob>();
+
             // SMTP
             services.AddSingleton<IEmailHelper, EmailHelper>();
 
@@ -137,11 +139,11 @@ namespace OneStopRecruitment
 
             services.AddScoped<IMyScopedService, MyScopedService>();
 
-            services.AddCronJob<MyCronJob1>(c =>
-            {
-                c.TimeZoneInfo = TimeZoneInfo.Local;
-                c.CronExpression = @"* * * * *";
-            });
+            //services.AddCronJob<MyCronJob1>(c =>
+            //{
+            //    c.TimeZoneInfo = TimeZoneInfo.Local;
+            //    c.CronExpression = @"* * * * *";
+            //});
             services.AddCronJob<CandidateMailJob>(c =>
             {
                 c.TimeZoneInfo = TimeZoneInfo.Local;
