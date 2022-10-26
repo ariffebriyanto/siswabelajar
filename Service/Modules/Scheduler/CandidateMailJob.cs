@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Model.DTO.OneStopRecruitmentDTO;
 using Model.Subdomains.EmailSubdomain;
@@ -18,11 +19,12 @@ namespace Service.Modules
     {
         private readonly ILogger<CandidateMailJob> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly MasterScheduleRepository _masterScheduleRepository;
-        private readonly PeriodRepository _periodRepository;
-        private readonly CandidateRepository _candidateRepository;
-        private readonly TransactionScheduleRepository _transactionScheduleRepository;
-        private readonly UserRepository _userRepository;
+        private readonly IMasterScheduleRepository _masterScheduleRepository;
+        private readonly IPeriodRepository _periodRepository;
+        private readonly ICandidateRepository _candidateRepository;
+        private readonly ITransactionScheduleRepository _transactionScheduleRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IAssignmentRepository _assignmentRepository;
         private readonly IEmailHelper _emailHelper;
 
         public CandidateMailJob(IScheduleConfig<CandidateMailJob> config, ILogger<CandidateMailJob> logger, IServiceProvider serviceProvider)
@@ -30,11 +32,12 @@ namespace Service.Modules
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-            _masterScheduleRepository = serviceProvider.GetRequiredService<MasterScheduleRepository>();
-            _periodRepository = serviceProvider.GetRequiredService<PeriodRepository>();
-            _candidateRepository = serviceProvider.GetRequiredService<CandidateRepository>();
-            _transactionScheduleRepository = serviceProvider.GetRequiredService<TransactionScheduleRepository>();
-            _userRepository = serviceProvider.GetRequiredService<UserRepository>();
+            _masterScheduleRepository = serviceProvider.GetRequiredService<IMasterScheduleRepository>();
+            _periodRepository = serviceProvider.GetRequiredService<IPeriodRepository>();
+            _candidateRepository = serviceProvider.GetRequiredService<ICandidateRepository>();
+            _transactionScheduleRepository = serviceProvider.GetRequiredService<ITransactionScheduleRepository>();
+            _userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+            _assignmentRepository = serviceProvider.GetRequiredService<IAssignmentRepository>();
             _emailHelper = serviceProvider.GetRequiredService<IEmailHelper>();
         }
 
@@ -73,8 +76,10 @@ namespace Service.Modules
 
                 var newCandidates = candidates.Select(i => new { i.NIM, i.Email }).Distinct().ToList();
                 var userCandidates = _userRepository.GetUserCandidateList(newCandidates.Select(i => i.NIM).ToList(), 2);
+
+                /* Get Unenrolled Candidates */
                 var trxSchedules = _transactionScheduleRepository.GetByScheduleAndUsers(item.IDSchedule, userCandidates.Select(i => i.IDUser).ToList());
-                var unenrolledCandidates = userCandidates.Where(i => trxSchedules.Select(j => j.IDUser).Contains(i.IDUser)).ToList();
+                var unenrolledCandidates = userCandidates.Where(i => !trxSchedules.Select(j => j.IDUser).Contains(i.IDUser)).ToList();
 
                 _emailHelper.Send(new Email
                 {
@@ -109,8 +114,10 @@ namespace Service.Modules
 
                 var newCandidates = candidates.Select(i => new { i.NIM, i.Email }).Distinct().ToList();
                 var userCandidates = _userRepository.GetUserCandidateList(newCandidates.Select(i => i.NIM).ToList(), 2);
+
+                /* Get Unenrolled Candidates */
                 var trxSchedules = _transactionScheduleRepository.GetByScheduleAndUsers(item.IDSchedule, userCandidates.Select(i => i.IDUser).ToList());
-                var unenrolledCandidates = userCandidates.Where(i => trxSchedules.Select(j => j.IDUser).Contains(i.IDUser)).ToList();
+                var unenrolledCandidates = userCandidates.Where(i => !trxSchedules.Select(j => j.IDUser).Contains(i.IDUser)).ToList();
 
                 _emailHelper.Send(new Email
                 {
@@ -121,7 +128,35 @@ namespace Service.Modules
                 });
             }
 
-            /* Assignment here */
+            /* Assignment on Deadline Start & Deadline End */
+            var assignmentDTOs = _assignmentRepository.GetAssignmentByIdPeriod(period != null ? period.IDPeriod : 0)
+                .Where(i => i.DeadlineStart.Date == DateTime.Now.Date || i.DeadlineEnd == DateTime.Now.Date)
+                .ToList();
+
+            foreach (var item in assignmentDTOs)
+            {
+                var schedulePosition = _masterScheduleRepository.GetScheduleByPeriod(period != null ? period.IDPeriod : 0)
+                    .Where(i => i.IDStage == item.IDStage && i.IDSubStage == item.IDSubStage)
+                    .Select(i => i.IDPosition)
+                    .FirstOrDefault();
+
+                /* Get Candidates */
+                var candidates = new List<CandidateDTO>();
+                var idPositions = schedulePosition.Split(';').ToArray();
+                foreach (var position in idPositions)
+                    candidates.AddRange(_candidateRepository.GetCandidateByStage(item.IDPeriod, item.IDStage, position).ToList());
+
+                var newCandidates = candidates.Select(i => new { i.NIM, i.Email }).Distinct().ToList();
+                var userCandidates = _userRepository.GetUserCandidateList(newCandidates.Select(i => i.NIM).ToList(), 2);
+
+                _emailHelper.Send(new Email
+                {
+                    Recipients = userCandidates.Select(i => i.Email).Distinct().ToList(),
+                    Subject = "Ongoing Schedule",
+                    Body = "Ongoing Schedule body",
+                    IsBodyHtml = true
+                });
+            }
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
